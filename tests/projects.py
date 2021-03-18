@@ -52,4 +52,3 @@ class ProjectsTest:
 
     def test_update_project_description_to_empty_should_succeed(self):
         pass
-
