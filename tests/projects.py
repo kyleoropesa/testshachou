@@ -16,3 +16,8 @@ class ProjectsTest:
 
     def test_get_all_projects_using_invalid_method(self):
         pass
+
+    def test_get_all_projects_for_empty_projectsdb(self):
+        pass
+
+
