@@ -11,3 +11,8 @@ class ProjectsTest:
     def test_create_project_with_non_existing_keys_for_optional_values_in_request_body(self):
         pass
 
+    def test_get_all_projects(self):
+        pass
+
+    def test_get_all_projects_using_invalid_method(self):
+        pass
