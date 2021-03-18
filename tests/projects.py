@@ -20,4 +20,11 @@ class ProjectsTest:
     def test_get_all_projects_for_empty_projectsdb(self):
         pass
 
+    def test_get_project_detail(self):
+        pass
+
+    def test_get_project_detail_with_non_existing_project_id(self):
+        pass
+
+
 
