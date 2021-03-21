@@ -57,8 +57,15 @@ def test_create_project_with_no_key_value_to_optional_field_description():
     assert json_response['updated_at'] is not None
 
 
-def test_create_project_with_non_existing_keys_for_optional_values_in_request_body():
-    pass
+def test_create_project_with_empty_values_in_title():
+    request_body = generate_create_project_payload(title=' ')
+    response = httpclient.post(endpoint.CREATE_PROJECT, json=request_body)
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+
+def test_create_project_with_empty_values_in_owner():
+    request_body = generate_create_project_payload(owner=' ')
+    response = httpclient.post(endpoint.CREATE_PROJECT, json=request_body)
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
 
 def test_get_all_projects():
