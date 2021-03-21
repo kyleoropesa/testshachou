@@ -4,17 +4,8 @@ from config.endpoints import Project
 from main import app
 import pytest
 
-
-@pytest.fixture
-def httpclient():
-    client: TestClient = TestClient(app)
-    return client
-
-
-@pytest.fixture
-def endpoint():
-    endpoint = Project()
-    return endpoint
+httpclient = TestClient(app)
+endpoint = Project()
 
 
 def generate_create_project_payload(
@@ -30,7 +21,7 @@ def generate_create_project_payload(
     }
 
 
-def test_successful_project_creation(httpclient, endpoint):
+def test_successful_project_creation():
     request_body = generate_create_project_payload()
     response = httpclient.post(endpoint.CREATE_PROJECT, json=request_body)
     json_response = response.json()
@@ -45,13 +36,13 @@ def test_successful_project_creation(httpclient, endpoint):
     assert json_response['updated_at'] is not None
 
 
-def test_create_project_with_invalid_format_in_request_body(httpclient, endpoint):
+def test_create_project_with_invalid_format_in_request_body():
     request_body = {}
     response = httpclient.post(endpoint.CREATE_PROJECT, json=request_body)
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
 
-def test_create_project_with_no_key_value_to_optional_field_description(httpclient, endpoint):
+def test_create_project_with_no_key_value_to_optional_field_description():
     request_body = generate_create_project_payload()
     request_body.pop('description')
     response = httpclient.post(endpoint.CREATE_PROJECT, json=request_body)
