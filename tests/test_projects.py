@@ -17,14 +17,21 @@ def endpoint():
     return endpoint
 
 
-def test_successful_project_creation(httpclient, endpoint):
-    request_body = {
-        "title": "Sample Project",
-        "description": "Sample Project Description",
-        "owner": "Sample Owner",
-        "tags": ["The", "Amazing", "Test"]
+def generate_create_project_payload(
+        title="Sample Project",
+        description="Sample Project Description",
+        owner="I am the owner",
+        tags=["hello", "world"]):
+    return {
+        "title": title,
+        "description": description,
+        "owner": owner,
+        "tags": tags
     }
 
+
+def test_successful_project_creation(httpclient, endpoint):
+    request_body = generate_create_project_payload()
     response = httpclient.post(endpoint.CREATE_PROJECT, json=request_body)
     json_response = response.json()
     assert response.status_code == status.HTTP_201_CREATED
@@ -38,12 +45,26 @@ def test_successful_project_creation(httpclient, endpoint):
     assert json_response['updated_at'] is not None
 
 
-def test_create_project_with_invalid_format_in_request_body():
-    pass
+def test_create_project_with_invalid_format_in_request_body(httpclient, endpoint):
+    request_body = {}
+    response = httpclient.post(endpoint.CREATE_PROJECT, json=request_body)
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
 
-def test_create_project_with_empty_values_on_optional_fields():
-    pass
+def test_create_project_with_no_key_value_to_optional_field_description(httpclient, endpoint):
+    request_body = generate_create_project_payload()
+    request_body.pop('description')
+    response = httpclient.post(endpoint.CREATE_PROJECT, json=request_body)
+    json_response = response.json()
+    assert response.status_code == status.HTTP_201_CREATED
+    assert json_response['title'] == request_body['title']
+    assert json_response['description'] is None
+    assert json_response['owner'] == request_body['owner']
+    assert json_response['tags'] == request_body['tags']
+    assert json_response['active'] is True
+    assert json_response['id'] is not None
+    assert json_response['created_at'] is not None
+    assert json_response['updated_at'] is not None
 
 
 def test_create_project_with_non_existing_keys_for_optional_values_in_request_body():
