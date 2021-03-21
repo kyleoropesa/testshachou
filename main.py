@@ -1,19 +1,20 @@
 from fastapi import FastAPI, Response, status
+from config.endpoints import Project
 from typing import List, Dict
 from uuid import uuid4
 from models.projects import *
 
 app = FastAPI()
-
 projects_db: Dict = {}
+endpoints = Project()
 
 
-@app.get("/projects")
+@app.get(endpoints.GET_ALL_PROJECT)
 async def get_all_projects():
     return list(projects_db.values())
 
 
-@app.post("/projects/create", status_code=status.HTTP_201_CREATED)
+@app.post(endpoints.CREATE_PROJECT, status_code=status.HTTP_201_CREATED)
 async def create_project(request: ProjectRequestModel):
     project = ProjectResponseModel(
         id=uuid4(),
@@ -29,7 +30,7 @@ async def create_project(request: ProjectRequestModel):
     return project
 
 
-@app.get("/projects/{project_id}")
+@app.get(endpoints.GET_PROJECT_DETAILS)
 async def get_project_details(project_id, response: Response):
     try:
         return projects_db[project_id]
@@ -37,7 +38,7 @@ async def get_project_details(project_id, response: Response):
         response.status_code = status.HTTP_404_NOT_FOUND
 
 
-@app.delete("/projects/{project_id}")
+@app.delete(endpoints.DELETE_PROJECT)
 async def delete_project(project_id, response: Response):
     try:
         project: ProjectResponseModel = projects_db[project_id]
@@ -46,7 +47,7 @@ async def delete_project(project_id, response: Response):
         response.status_code = status.HTTP_404_NOT_FOUND
 
 
-@app.put("/projects/{project_id}/update")
+@app.put(endpoints.UPDATE_PROJECT)
 async def update_project(project_id, request: ProjectRequestModel, response: Response):
     try:
         project: ProjectResponseModel = projects_db[project_id]
