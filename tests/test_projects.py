@@ -2,7 +2,6 @@ from fastapi.testclient import TestClient
 from fastapi import status
 from config.endpoints import Project
 from main import app
-import pytest
 
 httpclient = TestClient(app)
 endpoint = Project()
