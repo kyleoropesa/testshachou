@@ -93,11 +93,19 @@ def test_empty_get_all_projects():
 
 
 def test_get_project_detail():
-    pass
+    payload = generate_create_project_payload()
+    response = httpclient.post(endpoint.CREATE_PROJECT, json=payload)
+    json_response = response.json()
+    assert response.status_code == status.HTTP_201_CREATED
+
+    project_detail = httpclient.get(endpoint.GET_PROJECT_DETAILS.format(project_id=json_response['id']))
+    assert project_detail.status_code == status.HTTP_200_OK
+    assert response.json() == project_detail.json()
 
 
 def test_get_project_detail_with_non_existing_project_id():
-    pass
+    project_detail = httpclient.get(endpoint.GET_PROJECT_DETAILS.format(project_id='randomid'))
+    assert project_detail.status_code == status.HTTP_404_NOT_FOUND
 
 
 def test_update_project_title_should_succeed():
