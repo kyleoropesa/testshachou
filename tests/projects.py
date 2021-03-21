@@ -1,5 +1,14 @@
+from fastapi.testclient import TestClient
+from main import app
+import pytest
+
+
 class ProjectsTest:
-    def test_successful_project_creation(self):
+    @pytest.fixture
+    def test_client(self):
+        return TestClient(app)
+
+    def test_successful_project_creation(self, test_client):
         pass
 
     def test_create_project_with_invalid_format_in_request_body(self):
