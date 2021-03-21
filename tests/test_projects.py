@@ -62,6 +62,7 @@ def test_create_project_with_empty_values_in_title():
     response = httpclient.post(endpoint.CREATE_PROJECT, json=request_body)
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
+
 def test_create_project_with_empty_values_in_owner():
     request_body = generate_create_project_payload(owner=' ')
     response = httpclient.post(endpoint.CREATE_PROJECT, json=request_body)
@@ -69,15 +70,26 @@ def test_create_project_with_empty_values_in_owner():
 
 
 def test_get_all_projects():
-    pass
+    payload = generate_create_project_payload(title='first project')
+    response = httpclient.post(endpoint.CREATE_PROJECT, json=payload)
+    project = response.json()
+    assert response.status_code == status.HTTP_201_CREATED
+
+    get_projects_response = httpclient.get(endpoint.GET_ALL_PROJECT)
+    projecs_db = get_projects_response.json()
+    assert get_projects_response.status_code == status.HTTP_200_OK
+    assert project in projecs_db
 
 
 def test_get_all_projects_using_invalid_method():
-    pass
+    get_projects_response = httpclient.post(endpoint.GET_ALL_PROJECT)
+    assert get_projects_response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
 
 
-def test_get_all_projects_for_empty_projectsdb():
-    pass
+def test_empty_get_all_projects():
+    get_projects_response = httpclient.get(endpoint.GET_ALL_PROJECT)
+    projecs_db = get_projects_response.json()
+    assert len(projecs_db) == 0
 
 
 def test_get_project_detail():
