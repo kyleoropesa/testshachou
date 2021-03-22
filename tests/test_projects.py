@@ -151,7 +151,7 @@ def test_update_project_description_with_empty_values_should_succeed():
         json=update_project_payload
     )
     json_response = update_project_response.json()
-    assert update_project_response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert update_project_response.status_code == status.HTTP_200_OK
     assert json_response['title'] == update_project_payload['title']
     assert json_response['description'] == update_project_payload['description']
     assert json_response['owner'] == update_project_payload['owner']
