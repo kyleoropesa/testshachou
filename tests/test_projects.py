@@ -108,23 +108,34 @@ def test_get_project_detail_with_non_existing_project_id():
     assert project_detail.status_code == status.HTTP_404_NOT_FOUND
 
 
-def test_update_project_title_should_succeed():
-    pass
-
-
-def test_update_project_description_should_succeed():
-    pass
+def test_update_project_title_description_and_owner_should_succeed():
+    create_project_payload = generate_create_project_payload(title='original payload')
+    create_project_response = httpclient.post(endpoint.CREATE_PROJECT, json=create_project_payload)
+    assert create_project_response.status_code == status.HTTP_201_CREATED
+    project_id = create_project_response.json()['id']
+    update_project_payload = generate_create_project_payload(
+        title='updated title',
+        description='updated description',
+        owner='updated owner',
+        tags=['the', 'updated', 'tag']
+    )
+    update_project_response = httpclient.put(
+        endpoint.UPDATE_PROJECT.format(project_id=project_id),
+        json=update_project_payload
+    )
+    json_response = update_project_response.json()
+    assert update_project_response.status_code == status.HTTP_200_OK
+    assert json_response['title'] == update_project_payload['title']
+    assert json_response['description'] == update_project_payload['description']
+    assert json_response['owner'] == update_project_payload['owner']
+    assert json_response['tags'] == update_project_payload['tags']
+    assert json_response['active'] is True
+    assert json_response['id'] is not None
+    assert json_response['created_at'] is not None
+    assert json_response['updated_at'] is not None
 
 
 def test_update_project_description_with_empty_values_should_succeed():
-    pass
-
-
-def test_update_project_tags_should_succeed():
-    pass
-
-
-def test_update_project_owner_should_succeed():
     pass
 
 
