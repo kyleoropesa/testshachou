@@ -86,12 +86,6 @@ def test_get_all_projects_using_invalid_method():
     assert get_projects_response.status_code == status.HTTP_405_METHOD_NOT_ALLOWED
 
 
-def test_empty_get_all_projects():
-    get_projects_response = httpclient.get(endpoint.GET_ALL_PROJECT)
-    projecs_db = get_projects_response.json()
-    assert len(projecs_db) == 0
-
-
 def test_get_project_detail():
     payload = generate_create_project_payload()
     response = httpclient.post(endpoint.CREATE_PROJECT, json=payload)
