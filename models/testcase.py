@@ -6,3 +6,4 @@ class TestCaseModel(BaseModel):
     description: str
     author: str
     tags: List[str]
+    expected_results: str
