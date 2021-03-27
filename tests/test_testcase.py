@@ -36,4 +36,20 @@ def get_project_id() -> str:
 
 
 def test_successful_create_testcase():
-    pass
+    project_id = get_project_id()
+    payload = generate_create_testcase_payload()
+    response = httpclient.post(
+        URL.TESTCASE.CREATE_TESTCASE.format(project_id=project_id),
+        json=payload
+    )
+    json_response = response.json()
+    assert response.status_code == status.HTTP_201_CREATED
+    assert json_response['id'] is not None
+    assert json_response['title'] == payload['title']
+    assert json_response['description'] == payload['description']
+    assert json_response['author'] == payload['author']
+    assert json_response['tags'] == payload['tags']
+    assert json_response['expected_results'] == payload['expected_results']
+    assert json_response['created_at'] is not None
+    assert json_response['updated_at'] is not None
+    assert json_response['updated_by'] == payload['author']
