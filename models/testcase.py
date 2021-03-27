@@ -18,7 +18,12 @@ class TestCaseRequestModel(BaseModel):
         else:
             return value
 
-
+    @validator('title', 'description', 'author', 'expected_results')
+    def fields_should_not_be_empty_string(cls, value: str):
+        if value == "":
+            raise ValueError('Empty strings are not allowed')
+        else:
+            return value
 
 class TestCaseResponseModel(BaseModel):
     id: UUID
