@@ -1,4 +1,5 @@
 from pydantic import BaseConfig
+from dataclasses import dataclass
 
 
 class Project(BaseConfig):
@@ -10,10 +11,8 @@ class Project(BaseConfig):
 
 
 class TestCase(BaseConfig):
-    PROJECT_PATH: str = "/projects/{project_id}"
-
-    GET_ALL_TESTCASE: str = f"{PROJECT_PATH}" + "/testcase"
-    GET_TESTCASE_DETAIL: str = f"{PROJECT_PATH}" + "/testcase/{testcase_id}"
-    CREATE_TESTCASE: str = f"{PROJECT_PATH}" + "/testcase/create"
-    DELETE_TESTCASE: str = f"{PROJECT_PATH}" + "/testcase/{testcase_id}/delete"
-    UPDATE_TESTCASE: str = f"{PROJECT_PATH}" + "/testcase/{testcase_id}/update"
+    GET_ALL_TESTCASE: str = "/projects/{project_id}/testcase"
+    GET_TESTCASE_DETAIL: str = "/projects/{project_id}/testcase/{testcase_id}"
+    CREATE_TESTCASE: str = "/projects/{project_id}/testcase/create"
+    DELETE_TESTCASE: str = "/projects/{project_id}/testcase/{testcase_id}/delete"
+    UPDATE_TESTCASE: str = "/projects/{project_id}/testcase/{testcase_id}/update"
