@@ -46,6 +46,17 @@ def assert_empty_field_in_create_project_should_return_error(payload):
     assert json_response['detail'][0]['msg'] == 'Empty strings are not allowed'
 
 
+def assert_create_project_should_return_error_when_mandatory_fields_use_spaces_only(payload):
+    project_id = get_project_id()
+    response = httpclient.post(
+        URL.TESTCASE.CREATE_TESTCASE.format(project_id=project_id),
+        json=payload
+    )
+    json_response = response.json()
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert json_response['detail'][0]['msg'] == 'Spaces are confusing, use alphanumeric characters instead'
+
+
 def test_successful_create_testcase():
     project_id = get_project_id()
     payload = generate_create_testcase_payload()
@@ -95,3 +106,23 @@ def test_create_testcase_with_non_existing_project_id():
     json_response = response.json()
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert json_response['error'] == 'Project Does Not Exist'
+
+
+def test_create_testcase_using_title_with_space_only_as_value():
+    payload = generate_create_testcase_payload(title=" ")
+    assert_create_project_should_return_error_when_mandatory_fields_use_spaces_only(payload)
+
+
+def test_create_testcase_using_descripotion_with_space_only_as_value():
+    payload = generate_create_testcase_payload(description=" ")
+    assert_create_project_should_return_error_when_mandatory_fields_use_spaces_only(payload)
+
+
+def test_create_testcase_using_author_with_space_only_as_value():
+    payload = generate_create_testcase_payload(author=" ")
+    assert_create_project_should_return_error_when_mandatory_fields_use_spaces_only(payload)
+
+
+def test_create_testcase_using_expected_results_with_space_only_as_value():
+    payload = generate_create_testcase_payload(expected_results=" ")
+    assert_create_project_should_return_error_when_mandatory_fields_use_spaces_only(payload)
