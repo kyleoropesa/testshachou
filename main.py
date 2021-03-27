@@ -64,7 +64,7 @@ async def update_project(project_id, request: ProjectRequestModel, response: Res
 
 
 @app.post(URL.TESTCASE.CREATE_TESTCASE, status_code=status.HTTP_201_CREATED)
-async def create_testcase(project_id, request: TestCaseRequestModel):
+async def create_testcase(project_id, request: TestCaseRequestModel, response: Response):
     if project_id in projects_db:
         testcase = TestCaseResponseModel(
             id=uuid4(),
@@ -79,6 +79,10 @@ async def create_testcase(project_id, request: TestCaseRequestModel):
         )
         testcase_db[str(testcase.id)] = testcase
         return testcase
+    else:
+        response.status_code = status.HTTP_404_NOT_FOUND
+        raise ValueError('Project Does Not Exist')
+
 
 
 
