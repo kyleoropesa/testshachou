@@ -16,3 +16,9 @@ class TestCase(BaseConfig):
     CREATE_TESTCASE: str = "/projects/{project_id}/testcase/create"
     DELETE_TESTCASE: str = "/projects/{project_id}/testcase/{testcase_id}/delete"
     UPDATE_TESTCASE: str = "/projects/{project_id}/testcase/{testcase_id}/update"
+
+
+@dataclass
+class EndpointConfig:
+    PROJECT: Project = Project()
+    TESTCASE: TestCase = TestCase()
