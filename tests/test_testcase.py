@@ -35,6 +35,17 @@ def get_project_id() -> str:
     return json_response['id']
 
 
+def assert_empty_field_in_create_project_should_return_error(payload):
+    project_id = get_project_id()
+    response = httpclient.post(
+        URL.TESTCASE.CREATE_TESTCASE.format(project_id=project_id),
+        json=payload
+    )
+    json_response = response.json()
+    assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert json_response['detail'][0]['msg'] == 'Empty strings are not allowed'
+
+
 def test_successful_create_testcase():
     project_id = get_project_id()
     payload = generate_create_testcase_payload()
@@ -53,3 +64,23 @@ def test_successful_create_testcase():
     assert json_response['created_at'] is not None
     assert json_response['updated_at'] is not None
     assert json_response['updated_by'] == payload['author']
+
+
+def test_create_testcase_with_empty_title():
+    payload = generate_create_testcase_payload(title="")
+    assert_empty_field_in_create_project_should_return_error(payload)
+
+
+def test_create_testcase_with_empty_description():
+    payload = generate_create_testcase_payload(description="")
+    assert_empty_field_in_create_project_should_return_error(payload)
+
+
+def test_create_testcase_with_empty_author():
+    payload = generate_create_testcase_payload(author="")
+    assert_empty_field_in_create_project_should_return_error(payload)
+
+
+def test_create_testcase_with_empty_expected_results():
+    payload = generate_create_testcase_payload(expected_results="")
+    assert_empty_field_in_create_project_should_return_error(payload)
