@@ -12,7 +12,7 @@ def generate_create_testcase_payload(
         description="Testcase description",
         author="Testcase owner",
         tags=["test", "tags"],
-        expected_results="should pass"):
+        expected_results="should pass") -> dict:
     return {
         "title": title,
         "description": description,
@@ -21,7 +21,8 @@ def generate_create_testcase_payload(
         "expected_results": expected_results
     }
 
-def create_project():
+
+def get_project_id() -> str:
     payload = {
         "title": "Sample Project",
         "description": "Project description",
@@ -31,8 +32,8 @@ def create_project():
     response = httpclient.post(URL.PROJECT.CREATE_PROJECT, json=payload)
     assert response.status_code == status.HTTP_201_CREATED
     json_response = response.json()
-    return json_response
+    return json_response['id']
 
 
-
-
+def test_successful_create_testcase():
+    pass
