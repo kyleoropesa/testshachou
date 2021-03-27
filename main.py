@@ -81,7 +81,9 @@ async def create_testcase(project_id, request: TestCaseRequestModel, response: R
         return testcase
     else:
         response.status_code = status.HTTP_404_NOT_FOUND
-        raise ValueError('Project Does Not Exist')
+        return {
+            "error": "Project Does Not Exist"
+        }
 
 
 
