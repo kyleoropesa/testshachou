@@ -1,20 +1,22 @@
 from fastapi import FastAPI, Response, status
-from config.endpoints import Project
-from typing import List, Dict
+from config.endpoints import EndpointConfig
+from typing import Dict
 from uuid import uuid4
 from models.projects import *
+from models.testcase import *
 
 app = FastAPI()
 projects_db: Dict = {}
-endpoints = Project()
+testcase_db: Dict = {}
+URL = EndpointConfig()
 
 
-@app.get(endpoints.GET_ALL_PROJECT)
+@app.get(URL.PROJECT.GET_ALL_PROJECT)
 async def get_all_projects():
     return list(projects_db.values())
 
 
-@app.post(endpoints.CREATE_PROJECT, status_code=status.HTTP_201_CREATED)
+@app.post(URL.PROJECT.CREATE_PROJECT, status_code=status.HTTP_201_CREATED)
 async def create_project(request: ProjectRequestModel):
     project = ProjectResponseModel(
         id=uuid4(),
@@ -30,7 +32,7 @@ async def create_project(request: ProjectRequestModel):
     return project
 
 
-@app.get(endpoints.GET_PROJECT_DETAILS)
+@app.get(URL.PROJECT.GET_PROJECT_DETAILS)
 async def get_project_details(project_id, response: Response):
     try:
         return projects_db[project_id]
@@ -38,7 +40,7 @@ async def get_project_details(project_id, response: Response):
         response.status_code = status.HTTP_404_NOT_FOUND
 
 
-@app.delete(endpoints.DELETE_PROJECT)
+@app.delete(URL.PROJECT.DELETE_PROJECT)
 async def delete_project(project_id, response: Response):
     try:
         project: ProjectResponseModel = projects_db[project_id]
@@ -47,7 +49,7 @@ async def delete_project(project_id, response: Response):
         response.status_code = status.HTTP_404_NOT_FOUND
 
 
-@app.put(endpoints.UPDATE_PROJECT)
+@app.put(URL.PROJECT.UPDATE_PROJECT)
 async def update_project(project_id, request: ProjectRequestModel, response: Response):
     try:
         project: ProjectResponseModel = projects_db[project_id]
@@ -61,21 +63,41 @@ async def update_project(project_id, request: ProjectRequestModel, response: Res
         response.status_code = status.HTTP_404_NOT_FOUND
 
 
-@app.post("/projects/{project_id}/testcase/create")
-async def create_testcase(project_id):
-    pass
+@app.post(URL.TESTCASE.CREATE_TESTCASE, status_code=status.HTTP_201_CREATED)
+async def create_testcase(project_id, request: TestCaseRequestModel, response: Response):
+    if project_id in projects_db:
+        testcase = TestCaseResponseModel(
+            id=uuid4(),
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow(),
+            updated_by=request.author,
+            title=request.title,
+            description=request.description,
+            author=request.author,
+            tags=request.tags,
+            expected_results=request.expected_results
+        )
+        testcase_db[str(testcase.id)] = testcase
+        return testcase
+    else:
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return {
+            "error": "Project Does Not Exist"
+        }
 
 
-@app.get("/projects/{project_id}/testcase/{testcase_id}")
+
+
+@app.get(URL.TESTCASE.GET_TESTCASE_DETAIL)
 async def get_testcase_details(project_id, testcase_id):
     pass
 
 
-@app.delete("/projects/{project_id}/testcase/{testcase_id}")
+@app.delete(URL.TESTCASE.DELETE_TESTCASE)
 async def delete_testcase(project_id, testcase_id):
     pass
 
 
-@app.put("/projects/{project_id}/testcase/{testcase_id}/update")
+@app.put(URL.TESTCASE.UPDATE_TESTCASE)
 async def update_testcase(project_id, testcase_id):
     pass
