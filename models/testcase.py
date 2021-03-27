@@ -25,6 +25,14 @@ class TestCaseRequestModel(BaseModel):
         else:
             return value
 
+    @validator('tags')
+    def tags_should_not_be_empty_string(cls, tag_list: str):
+        for tags in tag_list:
+            if tags == "":
+                raise ValueError('Empty strings are not allowed')
+        return tag_list
+
+
 class TestCaseResponseModel(BaseModel):
     id: UUID
     created_at: datetime
