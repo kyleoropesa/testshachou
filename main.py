@@ -3,6 +3,7 @@ from config.endpoints import EndpointConfig
 from typing import Dict
 from uuid import uuid4
 from models.projects import *
+from models.testcase import *
 
 app = FastAPI()
 projects_db: Dict = {}
@@ -62,9 +63,23 @@ async def update_project(project_id, request: ProjectRequestModel, response: Res
         response.status_code = status.HTTP_404_NOT_FOUND
 
 
-@app.post(URL.TESTCASE.CREATE_TESTCASE)
-async def create_testcase(project_id):
-    pass
+@app.post(URL.TESTCASE.CREATE_TESTCASE, status_code=status.HTTP_201_CREATED)
+async def create_testcase(project_id, request: TestCaseRequestModel):
+    if project_id in projects_db:
+        testcase = TestCaseResponseModel(
+            id=uuid4(),
+            created_at=datetime.utcnow(),
+            updated_at=datetime.utcnow(),
+            updated_by=request.author,
+            title=request.title,
+            description=request.description,
+            author=request.author,
+            tags=request.tags,
+            expected_results=request.expected_results
+        )
+        testcase_db[str(testcase.id)] = testcase
+        return testcase
+
 
 
 @app.get(URL.TESTCASE.GET_TESTCASE_DETAIL)
