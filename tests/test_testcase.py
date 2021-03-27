@@ -84,3 +84,14 @@ def test_create_testcase_with_empty_author():
 def test_create_testcase_with_empty_expected_results():
     payload = generate_create_testcase_payload(expected_results="")
     assert_empty_field_in_create_project_should_return_error(payload)
+
+
+def test_create_testcase_with_non_existing_project_id():
+    payload = generate_create_testcase_payload()
+    response = httpclient.post(
+        URL.TESTCASE.CREATE_TESTCASE.format(project_id="NONEXISTING"),
+        json=payload
+    )
+    json_response = response.json()
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    assert json_response['error'] == 'Project Does Not Exist'
