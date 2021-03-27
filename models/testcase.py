@@ -40,7 +40,7 @@ class TestCaseRequestModel(BaseModel):
         return tag_list
 
 
-class TestCaseResponseModel(BaseModel):
+class TestCaseResponseModel(TestCaseRequestModel):
     id: UUID
     created_at: datetime
     updated_at: datetime
