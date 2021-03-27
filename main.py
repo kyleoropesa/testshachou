@@ -1,12 +1,14 @@
 from fastapi import FastAPI, Response, status
-from config.endpoints import Project
+from config.endpoints import Project, EndpointConfig
 from typing import List, Dict
 from uuid import uuid4
 from models.projects import *
 
 app = FastAPI()
 projects_db: Dict = {}
+testcase_db: Dict = {}
 endpoints = Project()
+URL = EndpointConfig()
 
 
 @app.get(endpoints.GET_ALL_PROJECT)
@@ -61,21 +63,21 @@ async def update_project(project_id, request: ProjectRequestModel, response: Res
         response.status_code = status.HTTP_404_NOT_FOUND
 
 
-@app.post("/projects/{project_id}/testcase/create")
+@app.post(URL.TESTCASE.CREATE_TESTCASE)
 async def create_testcase(project_id):
     pass
 
 
-@app.get("/projects/{project_id}/testcase/{testcase_id}")
+@app.get(URL.TESTCASE.GET_TESTCASE_DETAIL)
 async def get_testcase_details(project_id, testcase_id):
     pass
 
 
-@app.delete("/projects/{project_id}/testcase/{testcase_id}")
+@app.delete(URL.TESTCASE.DELETE_TESTCASE)
 async def delete_testcase(project_id, testcase_id):
     pass
 
 
-@app.put("/projects/{project_id}/testcase/{testcase_id}/update")
+@app.put(URL.TESTCASE.UPDATE_TESTCASE)
 async def update_testcase(project_id, testcase_id):
     pass
