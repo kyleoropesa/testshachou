@@ -26,7 +26,7 @@ class TestCaseRequestModel(BaseModel):
             return value
 
     @validator('tags')
-    def tags_should_not_be_empty_string(cls, tag_list: str):
+    def tag_values_should_not_be_empty_string(cls, tag_list: str):
         for tags in tag_list:
             if tags == "":
                 raise ValueError('Empty strings are not allowed')
