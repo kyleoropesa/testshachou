@@ -32,6 +32,13 @@ class TestCaseRequestModel(BaseModel):
                 raise ValueError('Empty strings are not allowed')
         return tag_list
 
+    @validator('tags')
+    def tag_values_should_not_be_space_only(cls, tag_list: str):
+        for tags in tag_list:
+            if tags.isspace():
+                raise ValueError('Spaces are not allowed')
+        return tag_list
+
 
 class TestCaseResponseModel(BaseModel):
     id: UUID
