@@ -36,7 +36,7 @@ class TestCaseRequestModel(BaseModel):
     def tag_values_should_not_be_space_only(cls, tag_list: str):
         for tags in tag_list:
             if tags.isspace():
-                raise ValueError('Spaces are not allowed')
+                raise ValueError('Spaces are confusing, use alphanumeric characters instead')
         return tag_list
 
 

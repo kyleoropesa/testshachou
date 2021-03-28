@@ -126,3 +126,13 @@ def test_create_testcase_using_author_with_space_only_as_value():
 def test_create_testcase_using_expected_results_with_space_only_as_value():
     payload = generate_create_testcase_payload(expected_results=" ")
     assert_create_project_should_return_error_when_mandatory_fields_use_spaces_only(payload)
+
+
+def test_create_testcase_using_empty_strings_only_on_tag_values():
+    payload = generate_create_testcase_payload(tags=[""])
+    assert_empty_field_in_create_project_should_return_error(payload)
+
+
+def test_create_testcase_using_spaces_only_on_tag_values():
+    payload = generate_create_testcase_payload(tags=[" "])
+    assert_create_project_should_return_error_when_mandatory_fields_use_spaces_only(payload)
