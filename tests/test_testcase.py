@@ -100,7 +100,7 @@ def test_create_testcase_with_empty_expected_results():
 def test_create_testcase_with_non_existing_project_id():
     payload = generate_create_testcase_payload()
     response = httpclient.post(
-        URL.TESTCASE.CREATE_TESTCASE.format(project_id="NONEXISTING"),
+        URL.TESTCASE.CREATE_TESTCASE.format(project_id="NON_EXISTING"),
         json=payload
     )
     json_response = response.json()
@@ -113,7 +113,7 @@ def test_create_testcase_using_title_with_space_only_as_value():
     assert_create_project_should_return_error_when_mandatory_fields_use_spaces_only(payload)
 
 
-def test_create_testcase_using_descripotion_with_space_only_as_value():
+def test_create_testcase_using_description_with_space_only_as_value():
     payload = generate_create_testcase_payload(description=" ")
     assert_create_project_should_return_error_when_mandatory_fields_use_spaces_only(payload)
 
