@@ -2,9 +2,11 @@ from fastapi.testclient import TestClient
 from config.endpoints import EndpointConfig
 from fastapi import status
 from main import app
+from config.errormessage import ErrorsConfig
 
 httpclient = TestClient(app)
-URL = EndpointConfig
+URL = EndpointConfig()
+ERRORS_CONF = ErrorsConfig()
 
 
 def generate_create_testcase_payload(
@@ -43,7 +45,7 @@ def assert_empty_field_in_create_project_should_return_error(payload):
     )
     json_response = response.json()
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
-    assert json_response['detail'][0]['msg'] == 'Empty strings are not allowed'
+    assert json_response['detail'][0]['msg'] == ERRORS_CONF.FIELD_VALUE.EMPTY_STRINGS
 
 
 def assert_create_project_should_return_error_when_mandatory_fields_use_spaces_only(payload):
@@ -54,7 +56,7 @@ def assert_create_project_should_return_error_when_mandatory_fields_use_spaces_o
     )
     json_response = response.json()
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
-    assert json_response['detail'][0]['msg'] == 'Spaces are confusing, use alphanumeric characters instead'
+    assert json_response['detail'][0]['msg'] == ERRORS_CONF.FIELD_VALUE.SPACES_ONLY
 
 
 def test_successful_create_testcase():
