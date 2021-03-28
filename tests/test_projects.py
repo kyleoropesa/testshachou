@@ -31,6 +31,16 @@ def assert_project_response(payload: dict, json_response: dict):
     assert json_response['updated_at'] is not None
 
 
+def assert_updated_project(create_project_payload: dict, update_project_payload: dict, project_id: str):
+    update_project_response = httpclient.put(
+        URL.PROJECT.UPDATE_PROJECT.format(project_id=project_id),
+        json=update_project_payload
+    )
+    assert update_project_response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    json_response = httpclient.get(URL.PROJECT.GET_PROJECT_DETAILS.format(project_id=project_id)).json()
+    assert_project_response(payload=create_project_payload, json_response=json_response)
+
+
 def test_successful_project_creation():
     request_body = generate_create_project_payload()
     response = httpclient.post(URL.PROJECT.CREATE_PROJECT, json=request_body)
@@ -136,13 +146,7 @@ def test_update_project_description_with_empty_values_should_succeed():
         owner='updated owner',
         tags=['the', 'updated', 'tag']
     )
-    update_project_response = httpclient.put(
-        URL.PROJECT.UPDATE_PROJECT.format(project_id=project_id),
-        json=update_project_payload
-    )
-    assert update_project_response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
-    json_response = httpclient.get(URL.PROJECT.GET_PROJECT_DETAILS.format(project_id=project_id)).json()
-    assert_project_response(payload=create_project_payload, json_response=json_response)
+    assert_updated_project(create_project_payload, update_project_payload, project_id)
 
 
 def test_update_project_owner_to_empty_should_return_error():
@@ -156,14 +160,7 @@ def test_update_project_owner_to_empty_should_return_error():
         owner='',
         tags=['the', 'updated', 'tag']
     )
-    update_project_response = httpclient.put(
-        URL.PROJECT.UPDATE_PROJECT.format(project_id=project_id),
-        json=update_project_payload
-    )
-    assert update_project_response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
-
-    json_response = httpclient.get(URL.PROJECT.GET_PROJECT_DETAILS.format(project_id=project_id)).json()
-    assert_project_response(payload=create_project_payload, json_response=json_response)
+    assert_updated_project(create_project_payload, update_project_payload, project_id)
 
 
 def test_update_project_title_to_empty_should_return_error():
@@ -177,13 +174,7 @@ def test_update_project_title_to_empty_should_return_error():
         owner='updated owner',
         tags=['the', 'updated', 'tag']
     )
-    update_project_response = httpclient.put(
-        URL.PROJECT.UPDATE_PROJECT.format(project_id=project_id),
-        json=update_project_payload
-    )
-    assert update_project_response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
-    json_response = httpclient.get(URL.PROJECT.GET_PROJECT_DETAILS.format(project_id=project_id)).json()
-    assert_project_response(payload=create_project_payload, json_response=json_response)
+    assert_updated_project(create_project_payload, update_project_payload, project_id)
 
 
 def test_update_project_tags_to_empty_should_return_error():
@@ -197,14 +188,7 @@ def test_update_project_tags_to_empty_should_return_error():
         owner='updated owner',
         tags=['']
     )
-    update_project_response = httpclient.put(
-        URL.PROJECT.UPDATE_PROJECT.format(project_id=project_id),
-        json=update_project_payload
-    )
-    assert update_project_response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
-
-    json_response = httpclient.get(URL.PROJECT.GET_PROJECT_DETAILS.format(project_id=project_id)).json()
-    assert_project_response(payload=create_project_payload, json_response=json_response)
+    assert_updated_project(create_project_payload, update_project_payload, project_id)
 
 
 def test_update_project_description_to_empty_should_not_succeed():
@@ -218,13 +202,7 @@ def test_update_project_description_to_empty_should_not_succeed():
         owner='updated owner',
         tags=['tag1', 'tag2', 'tag3']
     )
-    update_project_response = httpclient.put(
-        URL.PROJECT.UPDATE_PROJECT.format(project_id=project_id),
-        json=update_project_payload
-    )
-    assert update_project_response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
-    json_response = httpclient.get(URL.PROJECT.GET_PROJECT_DETAILS.format(project_id=project_id)).json()
-    assert_project_response(payload=create_project_payload, json_response=json_response)
+    assert_updated_project(create_project_payload, update_project_payload, project_id)
 
 
 def test_delete_project_details():
