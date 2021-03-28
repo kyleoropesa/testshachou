@@ -20,19 +20,23 @@ def generate_create_project_payload(
     }
 
 
+def assert_project_response(payload: dict, json_response: dict):
+    assert json_response['title'] == payload['title']
+    assert json_response['description'] == payload['description']
+    assert json_response['owner'] == payload['owner']
+    assert json_response['tags'] == payload['tags']
+    assert json_response['active'] is True
+    assert json_response['id'] is not None
+    assert json_response['created_at'] is not None
+    assert json_response['updated_at'] is not None
+
+
 def test_successful_project_creation():
     request_body = generate_create_project_payload()
     response = httpclient.post(endpoint.CREATE_PROJECT, json=request_body)
     json_response = response.json()
     assert response.status_code == status.HTTP_201_CREATED
-    assert json_response['title'] == request_body['title']
-    assert json_response['description'] == request_body['description']
-    assert json_response['owner'] == request_body['owner']
-    assert json_response['tags'] == request_body['tags']
-    assert json_response['active'] is True
-    assert json_response['id'] is not None
-    assert json_response['created_at'] is not None
-    assert json_response['updated_at'] is not None
+    assert_project_response(payload=request_body, json_response=json_response)
 
 
 def test_create_project_with_invalid_format_in_request_body():
@@ -118,15 +122,7 @@ def test_update_project_title_description_and_owner_should_succeed():
         json=update_project_payload
     )
     json_response = update_project_response.json()
-    assert update_project_response.status_code == status.HTTP_200_OK
-    assert json_response['title'] == update_project_payload['title']
-    assert json_response['description'] == update_project_payload['description']
-    assert json_response['owner'] == update_project_payload['owner']
-    assert json_response['tags'] == update_project_payload['tags']
-    assert json_response['active'] is True
-    assert json_response['id'] is not None
-    assert json_response['created_at'] is not None
-    assert json_response['updated_at'] is not None
+    assert_project_response(payload=update_project_payload, json_response=json_response)
 
 
 def test_update_project_description_with_empty_values_should_succeed():
@@ -136,7 +132,7 @@ def test_update_project_description_with_empty_values_should_succeed():
     project_id = create_project_response.json()['id']
     update_project_payload = generate_create_project_payload(
         title='updated titled',
-        description='updated description',
+        description='',
         owner='updated owner',
         tags=['the', 'updated', 'tag']
     )
@@ -144,17 +140,9 @@ def test_update_project_description_with_empty_values_should_succeed():
         endpoint.UPDATE_PROJECT.format(project_id=project_id),
         json=update_project_payload
     )
-    json_response = update_project_response.json()
-    assert update_project_response.status_code == status.HTTP_200_OK
-    assert json_response['title'] == update_project_payload['title']
-    assert json_response['description'] == update_project_payload['description']
-    assert json_response['owner'] == update_project_payload['owner']
-    assert json_response['tags'] == update_project_payload['tags']
-    assert json_response['active'] is True
-    assert json_response['id'] is not None
-    assert json_response['created_at'] is not None
-    assert json_response['updated_at'] is not None
-
+    assert update_project_response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    json_response = httpclient.get(endpoint.GET_PROJECT_DETAILS.format(project_id=project_id)).json()
+    assert_project_response(payload=create_project_payload, json_response=json_response)
 
 
 def test_update_project_owner_to_empty_should_return_error():
@@ -174,15 +162,8 @@ def test_update_project_owner_to_empty_should_return_error():
     )
     assert update_project_response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
-    project_details = httpclient.get(endpoint.GET_PROJECT_DETAILS.format(project_id=project_id)).json()
-    assert project_details['title'] == create_project_payload['title']
-    assert project_details['description'] == create_project_payload['description']
-    assert project_details['owner'] == create_project_payload['owner']
-    assert project_details['tags'] == create_project_payload['tags']
-    assert project_details['active'] is True
-    assert project_details['id'] is not None
-    assert project_details['created_at'] is not None
-    assert project_details['updated_at'] is not None
+    json_response = httpclient.get(endpoint.GET_PROJECT_DETAILS.format(project_id=project_id)).json()
+    assert_project_response(payload=create_project_payload, json_response=json_response)
 
 
 def test_update_project_title_to_empty_should_return_error():
@@ -201,16 +182,8 @@ def test_update_project_title_to_empty_should_return_error():
         json=update_project_payload
     )
     assert update_project_response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
-
-    project_details = httpclient.get(endpoint.GET_PROJECT_DETAILS.format(project_id=project_id)).json()
-    assert project_details['title'] == create_project_payload['title']
-    assert project_details['description'] == create_project_payload['description']
-    assert project_details['owner'] == create_project_payload['owner']
-    assert project_details['tags'] == create_project_payload['tags']
-    assert project_details['active'] is True
-    assert project_details['id'] is not None
-    assert project_details['created_at'] is not None
-    assert project_details['updated_at'] is not None
+    json_response = httpclient.get(endpoint.GET_PROJECT_DETAILS.format(project_id=project_id)).json()
+    assert_project_response(payload=create_project_payload, json_response=json_response)
 
 
 def test_update_project_tags_to_empty_should_return_error():
@@ -230,16 +203,8 @@ def test_update_project_tags_to_empty_should_return_error():
     )
     assert update_project_response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
 
-    project_details = httpclient.get(endpoint.GET_PROJECT_DETAILS.format(project_id=project_id)).json()
-    assert project_details['title'] == create_project_payload['title']
-    assert project_details['description'] == create_project_payload['description']
-    assert project_details['owner'] == create_project_payload['owner']
-    assert project_details['tags'] == create_project_payload['tags']
-    assert project_details['active'] is True
-    assert project_details['id'] is not None
-    assert project_details['created_at'] is not None
-    assert project_details['updated_at'] is not None
-
+    json_response = httpclient.get(endpoint.GET_PROJECT_DETAILS.format(project_id=project_id)).json()
+    assert_project_response(payload=create_project_payload, json_response=json_response)
 
 
 def test_update_project_description_to_empty_should_not_succeed():
@@ -258,16 +223,8 @@ def test_update_project_description_to_empty_should_not_succeed():
         json=update_project_payload
     )
     assert update_project_response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
-
-    project_details = httpclient.get(endpoint.GET_PROJECT_DETAILS.format(project_id=project_id)).json()
-    assert project_details['title'] == create_project_payload['title']
-    assert project_details['description'] == create_project_payload['description']
-    assert project_details['owner'] == create_project_payload['owner']
-    assert project_details['tags'] == create_project_payload['tags']
-    assert project_details['active'] is True
-    assert project_details['id'] is not None
-    assert project_details['created_at'] is not None
-    assert project_details['updated_at'] is not None
+    json_response = httpclient.get(endpoint.GET_PROJECT_DETAILS.format(project_id=project_id)).json()
+    assert_project_response(payload=create_project_payload, json_response=json_response)
 
 
 def test_delete_project_details():
