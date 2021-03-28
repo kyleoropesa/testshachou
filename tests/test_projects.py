@@ -90,9 +90,9 @@ def test_get_all_projects():
     assert response.status_code == status.HTTP_201_CREATED
 
     get_projects_response = httpclient.get(URL.PROJECT.GET_ALL_PROJECT)
-    projecs_db = get_projects_response.json()
+    projects_db = get_projects_response.json()
     assert get_projects_response.status_code == status.HTTP_200_OK
-    assert project in projecs_db
+    assert project in projects_db
 
 
 def test_get_all_projects_using_invalid_method():
@@ -112,7 +112,7 @@ def test_get_project_detail():
 
 
 def test_get_project_detail_with_non_existing_project_id():
-    project_detail = httpclient.get(URL.PROJECT.GET_PROJECT_DETAILS.format(project_id='randomid'))
+    project_detail = httpclient.get(URL.PROJECT.GET_PROJECT_DETAILS.format(project_id='random_id'))
     assert project_detail.status_code == status.HTTP_404_NOT_FOUND
 
 
