@@ -167,6 +167,22 @@ def test_update_project_description_with_empty_strings_should_return_error():
         ERRORS_CONF.FIELD_VALUE.EMPTY_STRINGS)
 
 
+def test_update_project_description_with_spaces_only_should_return_error():
+    create_project_payload = generate_create_project_payload(title='original payload')
+    project_id = get_id_of_created_project(create_project_payload)
+    update_project_payload = generate_create_project_payload(
+        title='updated titled',
+        description='  ',
+        owner='updated owner',
+        tags=['the', 'updated', 'tag']
+    )
+    assert_updated_project_has_error(
+        create_project_payload,
+        update_project_payload,
+        project_id,
+        ERRORS_CONF.FIELD_VALUE.SPACES_ONLY)
+
+
 def test_update_project_owner_to_empty_strings_should_return_error():
     create_project_payload = generate_create_project_payload(title='original payload')
     project_id = get_id_of_created_project(create_project_payload)
@@ -181,6 +197,23 @@ def test_update_project_owner_to_empty_strings_should_return_error():
         update_project_payload,
         project_id,
         ERRORS_CONF.FIELD_VALUE.EMPTY_STRINGS
+    )
+
+
+def test_update_project_owner_to_spaces_only_should_return_error():
+    create_project_payload = generate_create_project_payload(title='original payload')
+    project_id = get_id_of_created_project(create_project_payload)
+    update_project_payload = generate_create_project_payload(
+        title='updated title',
+        description='updated description',
+        owner='  ',
+        tags=['the', 'updated', 'tag']
+    )
+    assert_updated_project_has_error(
+        create_project_payload,
+        update_project_payload,
+        project_id,
+        ERRORS_CONF.FIELD_VALUE.SPACES_ONLY
     )
 
 
@@ -201,6 +234,23 @@ def test_update_project_title_to_empty_strings_should_return_error():
     )
 
 
+def test_update_project_title_to_spaces_only_should_return_error():
+    create_project_payload = generate_create_project_payload(title='original payload')
+    project_id = get_id_of_created_project(create_project_payload)
+    update_project_payload = generate_create_project_payload(
+        title='  ',
+        description='updated description',
+        owner='updated owner',
+        tags=['the', 'updated', 'tag']
+    )
+    assert_updated_project_has_error(
+        create_project_payload,
+        update_project_payload,
+        project_id,
+        ERRORS_CONF.FIELD_VALUE.SPACES_ONLY
+    )
+
+
 def test_update_project_tags_to_empty_strings_should_return_error():
     create_project_payload = generate_create_project_payload(title='original payload')
     project_id = get_id_of_created_project(create_project_payload)
@@ -218,20 +268,20 @@ def test_update_project_tags_to_empty_strings_should_return_error():
     )
 
 
-def test_update_project_description_to_empty_strings_should_not_succeed():
+def test_update_project_tags_to_spaces_only_should_return_error():
     create_project_payload = generate_create_project_payload(title='original payload')
     project_id = get_id_of_created_project(create_project_payload)
     update_project_payload = generate_create_project_payload(
         title='updated title',
-        description='',
+        description='updated description',
         owner='updated owner',
-        tags=['tag1', 'tag2', 'tag3']
+        tags=['  ']
     )
     assert_updated_project_has_error(
         create_project_payload,
         update_project_payload,
         project_id,
-        ERRORS_CONF.FIELD_VALUE.EMPTY_STRINGS
+        ERRORS_CONF.FIELD_VALUE.SPACES_ONLY
     )
 
 
