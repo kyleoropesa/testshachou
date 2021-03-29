@@ -20,19 +20,26 @@ class ProjectRequestModel(BaseModel):
         else:
             return value
 
-    @validator('description')
-    def description_should_not_be_space_only(cls, value: str):
-        if value is str:
-            if value.isspace():
-                raise ValueError(ERRORS_CONF.FIELD_VALUE.SPACES_ONLY)
-        return value
-
-    @validator('title', 'owner', 'description')
+    @validator('title', 'owner',)
     def fields_should_not_be_empty_string(cls, value: str):
         if value == "":
             raise ValueError(ERRORS_CONF.FIELD_VALUE.EMPTY_STRINGS)
         else:
             return value
+
+    @validator('description')
+    def description_should_not_be_empty_string(cls, value: str):
+        if value is not None:
+            if value == "":
+                raise ValueError(ERRORS_CONF.FIELD_VALUE.EMPTY_STRINGS)
+        return value
+
+    @validator('description')
+    def description_should_not_be_space_only(cls, value: str):
+        if value is not None:
+            if value.isspace():
+                raise ValueError(ERRORS_CONF.FIELD_VALUE.SPACES_ONLY)
+        return value
 
     @validator('tags')
     def tag_values_should_not_be_space_only(cls, tag_list: list):
