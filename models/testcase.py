@@ -2,6 +2,9 @@ from typing import List, Optional
 from pydantic import BaseModel, validator
 from datetime import datetime
 from uuid import UUID
+from config.errormessage import ErrorsConfig
+
+ERRORS_CONF = ErrorsConfig()
 
 
 class TestCaseRequestModel(BaseModel):
@@ -14,14 +17,14 @@ class TestCaseRequestModel(BaseModel):
     @validator('title', 'description', 'author', 'expected_results')
     def fields_should_not_be_space_only(cls, value: str):
         if value.isspace():
-            raise ValueError('Spaces are confusing, use alphanumeric characters instead')
+            raise ValueError(ERRORS_CONF.FIELD_VALUE.SPACES_ONLY)
         else:
             return value
 
     @validator('title', 'description', 'author', 'expected_results')
     def fields_should_not_be_empty_string(cls, value: str):
         if value == "":
-            raise ValueError('Empty strings are not allowed')
+            raise ValueError(ERRORS_CONF.FIELD_VALUE.EMPTY_STRINGS)
         else:
             return value
 
@@ -29,14 +32,14 @@ class TestCaseRequestModel(BaseModel):
     def tag_values_should_not_be_empty_string(cls, tag_list: str):
         for tags in tag_list:
             if tags == "":
-                raise ValueError('Empty strings are not allowed')
+                raise ValueError(ERRORS_CONF.FIELD_VALUE.EMPTY_STRINGS)
         return tag_list
 
     @validator('tags')
     def tag_values_should_not_be_space_only(cls, tag_list: str):
         for tags in tag_list:
             if tags.isspace():
-                raise ValueError('Spaces are not allowed')
+                raise ValueError(ERRORS_CONF.FIELD_VALUE.SPACES_ONLY)
         return tag_list
 
 
