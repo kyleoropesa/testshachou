@@ -2,9 +2,11 @@ from fastapi.testclient import TestClient
 from config.endpoints import EndpointConfig
 from fastapi import status
 from main import app
+from config.errormessage import ErrorsConfig
 
 httpclient = TestClient(app)
-URL = EndpointConfig
+URL = EndpointConfig()
+ERRORS_CONF = ErrorsConfig()
 
 
 def generate_create_testcase_payload(
@@ -43,7 +45,7 @@ def assert_empty_field_in_create_project_should_return_error(payload):
     )
     json_response = response.json()
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
-    assert json_response['detail'][0]['msg'] == 'Empty strings are not allowed'
+    assert json_response['detail'][0]['msg'] == ERRORS_CONF.FIELD_VALUE.EMPTY_STRINGS
 
 
 def assert_create_project_should_return_error_when_mandatory_fields_use_spaces_only(payload):
@@ -54,7 +56,7 @@ def assert_create_project_should_return_error_when_mandatory_fields_use_spaces_o
     )
     json_response = response.json()
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
-    assert json_response['detail'][0]['msg'] == 'Spaces are confusing, use alphanumeric characters instead'
+    assert json_response['detail'][0]['msg'] == ERRORS_CONF.FIELD_VALUE.SPACES_ONLY
 
 
 def test_successful_create_testcase():
@@ -105,7 +107,7 @@ def test_create_testcase_with_non_existing_project_id():
     )
     json_response = response.json()
     assert response.status_code == status.HTTP_404_NOT_FOUND
-    assert json_response['error'] == 'Project Does Not Exist'
+    assert json_response['error'] == ERRORS_CONF.GENERAL_ERRORS.PROJECT_DOES_NOT_EXIST
 
 
 def test_create_testcase_using_title_with_space_only_as_value():
@@ -125,4 +127,14 @@ def test_create_testcase_using_author_with_space_only_as_value():
 
 def test_create_testcase_using_expected_results_with_space_only_as_value():
     payload = generate_create_testcase_payload(expected_results=" ")
+    assert_create_project_should_return_error_when_mandatory_fields_use_spaces_only(payload)
+
+
+def test_create_testcase_using_empty_strings_only_on_tag_values():
+    payload = generate_create_testcase_payload(tags=[""])
+    assert_empty_field_in_create_project_should_return_error(payload)
+
+
+def test_create_testcase_using_spaces_only_on_tag_values():
+    payload = generate_create_testcase_payload(tags=[" "])
     assert_create_project_should_return_error_when_mandatory_fields_use_spaces_only(payload)
