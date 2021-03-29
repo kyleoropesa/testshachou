@@ -127,11 +127,16 @@ def test_get_project_detail_with_non_existing_project_id():
     assert json_response['error'] == ERRORS_CONF.GENERAL_ERRORS.PROJECT_DOES_NOT_EXIST
 
 
-def test_update_project_title_description_and_owner_should_succeed():
-    create_project_payload = generate_create_project_payload(title='original payload')
+def get_id_of_created_project(create_project_payload):
     create_project_response = httpclient.post(URL.PROJECT.CREATE_PROJECT, json=create_project_payload)
     assert create_project_response.status_code == status.HTTP_201_CREATED
     project_id = create_project_response.json()['id']
+    return project_id
+
+
+def test_update_project_title_description_and_owner_should_succeed():
+    create_project_payload = generate_create_project_payload(title='original payload')
+    project_id = get_id_of_created_project(create_project_payload)
     update_project_payload = generate_create_project_payload(
         title='updated title',
         description='updated description',
@@ -148,9 +153,7 @@ def test_update_project_title_description_and_owner_should_succeed():
 
 def test_update_project_description_with_empty_strings_should_return_error():
     create_project_payload = generate_create_project_payload(title='original payload')
-    create_project_response = httpclient.post(URL.PROJECT.CREATE_PROJECT, json=create_project_payload)
-    assert create_project_response.status_code == status.HTTP_201_CREATED
-    project_id = create_project_response.json()['id']
+    project_id = get_id_of_created_project(create_project_payload)
     update_project_payload = generate_create_project_payload(
         title='updated titled',
         description='',
@@ -166,9 +169,7 @@ def test_update_project_description_with_empty_strings_should_return_error():
 
 def test_update_project_owner_to_empty_strings_should_return_error():
     create_project_payload = generate_create_project_payload(title='original payload')
-    create_project_response = httpclient.post(URL.PROJECT.CREATE_PROJECT, json=create_project_payload)
-    assert create_project_response.status_code == status.HTTP_201_CREATED
-    project_id = create_project_response.json()['id']
+    project_id = get_id_of_created_project(create_project_payload)
     update_project_payload = generate_create_project_payload(
         title='updated title',
         description='updated description',
@@ -185,9 +186,7 @@ def test_update_project_owner_to_empty_strings_should_return_error():
 
 def test_update_project_title_to_empty_strings_should_return_error():
     create_project_payload = generate_create_project_payload(title='original payload')
-    create_project_response = httpclient.post(URL.PROJECT.CREATE_PROJECT, json=create_project_payload)
-    assert create_project_response.status_code == status.HTTP_201_CREATED
-    project_id = create_project_response.json()['id']
+    project_id = get_id_of_created_project(create_project_payload)
     update_project_payload = generate_create_project_payload(
         title='',
         description='updated description',
@@ -204,9 +203,7 @@ def test_update_project_title_to_empty_strings_should_return_error():
 
 def test_update_project_tags_to_empty_strings_should_return_error():
     create_project_payload = generate_create_project_payload(title='original payload')
-    create_project_response = httpclient.post(URL.PROJECT.CREATE_PROJECT, json=create_project_payload)
-    assert create_project_response.status_code == status.HTTP_201_CREATED
-    project_id = create_project_response.json()['id']
+    project_id = get_id_of_created_project(create_project_payload)
     update_project_payload = generate_create_project_payload(
         title='updated title',
         description='updated description',
@@ -223,9 +220,7 @@ def test_update_project_tags_to_empty_strings_should_return_error():
 
 def test_update_project_description_to_empty_strings_should_not_succeed():
     create_project_payload = generate_create_project_payload(title='original payload')
-    create_project_response = httpclient.post(URL.PROJECT.CREATE_PROJECT, json=create_project_payload)
-    assert create_project_response.status_code == status.HTTP_201_CREATED
-    project_id = create_project_response.json()['id']
+    project_id = get_id_of_created_project(create_project_payload)
     update_project_payload = generate_create_project_payload(
         title='updated title',
         description='',
@@ -242,9 +237,7 @@ def test_update_project_description_to_empty_strings_should_not_succeed():
 
 def test_delete_project_details():
     create_project_payload = generate_create_project_payload(title='original payload')
-    create_project_response = httpclient.post(URL.PROJECT.CREATE_PROJECT, json=create_project_payload)
-    project_id = create_project_response.json()['id']
-    assert create_project_response.status_code == status.HTTP_201_CREATED
+    project_id = get_id_of_created_project(create_project_payload)
 
     get_project_response = httpclient.get(URL.PROJECT.GET_PROJECT_DETAILS.format(project_id=project_id))
     assert get_project_response.status_code == status.HTTP_200_OK
