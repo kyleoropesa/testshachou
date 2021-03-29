@@ -14,3 +14,4 @@ class GeneralErrors(BaseConfig):
 @dataclass
 class ErrorsConfig:
     FIELD_VALUE: FieldValueErrors = FieldValueErrors()
+    GENERAL_ERRORS: GeneralErrors = GeneralErrors()
