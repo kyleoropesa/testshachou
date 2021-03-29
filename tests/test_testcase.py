@@ -107,7 +107,7 @@ def test_create_testcase_with_non_existing_project_id():
     )
     json_response = response.json()
     assert response.status_code == status.HTTP_404_NOT_FOUND
-    assert json_response['error'] == 'Project Does Not Exist'
+    assert json_response['error'] == ERRORS_CONF.GENERAL_ERRORS.PROJECT_DOES_NOT_EXIST
 
 
 def test_create_testcase_using_title_with_space_only_as_value():
