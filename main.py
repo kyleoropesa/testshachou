@@ -1,6 +1,5 @@
 from fastapi import FastAPI, Response, status
 from config.endpoints import EndpointConfig
-from config.errormessage import *
 from typing import Dict
 from uuid import uuid4
 from models.projects import *

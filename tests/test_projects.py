@@ -1,10 +1,12 @@
 from fastapi.testclient import TestClient
 from fastapi import status
 from config.endpoints import EndpointConfig
+from config.errormessage import ErrorsConfig
 from main import app
 
 httpclient = TestClient(app)
 URL = EndpointConfig()
+ERRORS_CONF = ErrorsConfig()
 
 
 def generate_create_project_payload(
@@ -31,12 +33,15 @@ def assert_project_response(payload: dict, json_response: dict):
     assert json_response['updated_at'] is not None
 
 
-def assert_updated_project(create_project_payload: dict, update_project_payload: dict, project_id: str):
+def assert_updated_project_has_error(create_project_payload: dict, update_project_payload: dict, project_id: str,
+                                     error: str):
     update_project_response = httpclient.put(
         URL.PROJECT.UPDATE_PROJECT.format(project_id=project_id),
         json=update_project_payload
     )
     assert update_project_response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    json_error_response = update_project_response.json()
+    assert json_error_response['detail'][0]['msg'] == error
     json_response = httpclient.get(URL.PROJECT.GET_PROJECT_DETAILS.format(project_id=project_id)).json()
     assert_project_response(payload=create_project_payload, json_response=json_response)
 
@@ -71,16 +76,20 @@ def test_create_project_with_no_key_value_to_optional_field_description():
     assert json_response['updated_at'] is not None
 
 
-def test_create_project_with_empty_values_in_title():
-    request_body = generate_create_project_payload(title=' ')
+def test_create_project_with_empty_strings_in_title():
+    request_body = generate_create_project_payload(title='')
     response = httpclient.post(URL.PROJECT.CREATE_PROJECT, json=request_body)
+    json_response = response.json()
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert json_response['detail'][0]['msg'] == ERRORS_CONF.FIELD_VALUE.EMPTY_STRINGS
 
 
 def test_create_project_with_empty_values_in_owner():
-    request_body = generate_create_project_payload(owner=' ')
+    request_body = generate_create_project_payload(owner='')
     response = httpclient.post(URL.PROJECT.CREATE_PROJECT, json=request_body)
+    json_response = response.json()
     assert response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
+    assert json_response['detail'][0]['msg'] == ERRORS_CONF.FIELD_VALUE.EMPTY_STRINGS
 
 
 def test_get_all_projects():
@@ -112,8 +121,10 @@ def test_get_project_detail():
 
 
 def test_get_project_detail_with_non_existing_project_id():
-    project_detail = httpclient.get(URL.PROJECT.GET_PROJECT_DETAILS.format(project_id='random_id'))
-    assert project_detail.status_code == status.HTTP_404_NOT_FOUND
+    response = httpclient.get(URL.PROJECT.GET_PROJECT_DETAILS.format(project_id='random_id'))
+    json_response = response.json()
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    assert json_response['error'] == ERRORS_CONF.GENERAL_ERRORS.PROJECT_DOES_NOT_EXIST
 
 
 def test_update_project_title_description_and_owner_should_succeed():
@@ -135,7 +146,7 @@ def test_update_project_title_description_and_owner_should_succeed():
     assert_project_response(payload=update_project_payload, json_response=json_response)
 
 
-def test_update_project_description_with_empty_values_should_succeed():
+def test_update_project_description_with_empty_strings_should_return_error():
     create_project_payload = generate_create_project_payload(title='original payload')
     create_project_response = httpclient.post(URL.PROJECT.CREATE_PROJECT, json=create_project_payload)
     assert create_project_response.status_code == status.HTTP_201_CREATED
@@ -146,10 +157,14 @@ def test_update_project_description_with_empty_values_should_succeed():
         owner='updated owner',
         tags=['the', 'updated', 'tag']
     )
-    assert_updated_project(create_project_payload, update_project_payload, project_id)
+    assert_updated_project_has_error(
+        create_project_payload,
+        update_project_payload,
+        project_id,
+        ERRORS_CONF.FIELD_VALUE.EMPTY_STRINGS)
 
 
-def test_update_project_owner_to_empty_should_return_error():
+def test_update_project_owner_to_empty_strings_should_return_error():
     create_project_payload = generate_create_project_payload(title='original payload')
     create_project_response = httpclient.post(URL.PROJECT.CREATE_PROJECT, json=create_project_payload)
     assert create_project_response.status_code == status.HTTP_201_CREATED
@@ -160,10 +175,15 @@ def test_update_project_owner_to_empty_should_return_error():
         owner='',
         tags=['the', 'updated', 'tag']
     )
-    assert_updated_project(create_project_payload, update_project_payload, project_id)
+    assert_updated_project_has_error(
+        create_project_payload,
+        update_project_payload,
+        project_id,
+        ERRORS_CONF.FIELD_VALUE.EMPTY_STRINGS
+    )
 
 
-def test_update_project_title_to_empty_should_return_error():
+def test_update_project_title_to_empty_strings_should_return_error():
     create_project_payload = generate_create_project_payload(title='original payload')
     create_project_response = httpclient.post(URL.PROJECT.CREATE_PROJECT, json=create_project_payload)
     assert create_project_response.status_code == status.HTTP_201_CREATED
@@ -174,10 +194,15 @@ def test_update_project_title_to_empty_should_return_error():
         owner='updated owner',
         tags=['the', 'updated', 'tag']
     )
-    assert_updated_project(create_project_payload, update_project_payload, project_id)
+    assert_updated_project_has_error(
+        create_project_payload,
+        update_project_payload,
+        project_id,
+        ERRORS_CONF.FIELD_VALUE.EMPTY_STRINGS
+    )
 
 
-def test_update_project_tags_to_empty_should_return_error():
+def test_update_project_tags_to_empty_strings_should_return_error():
     create_project_payload = generate_create_project_payload(title='original payload')
     create_project_response = httpclient.post(URL.PROJECT.CREATE_PROJECT, json=create_project_payload)
     assert create_project_response.status_code == status.HTTP_201_CREATED
@@ -188,10 +213,15 @@ def test_update_project_tags_to_empty_should_return_error():
         owner='updated owner',
         tags=['']
     )
-    assert_updated_project(create_project_payload, update_project_payload, project_id)
+    assert_updated_project_has_error(
+        create_project_payload,
+        update_project_payload,
+        project_id,
+        ERRORS_CONF.FIELD_VALUE.EMPTY_STRINGS
+    )
 
 
-def test_update_project_description_to_empty_should_not_succeed():
+def test_update_project_description_to_empty_strings_should_not_succeed():
     create_project_payload = generate_create_project_payload(title='original payload')
     create_project_response = httpclient.post(URL.PROJECT.CREATE_PROJECT, json=create_project_payload)
     assert create_project_response.status_code == status.HTTP_201_CREATED
@@ -202,7 +232,12 @@ def test_update_project_description_to_empty_should_not_succeed():
         owner='updated owner',
         tags=['tag1', 'tag2', 'tag3']
     )
-    assert_updated_project(create_project_payload, update_project_payload, project_id)
+    assert_updated_project_has_error(
+        create_project_payload,
+        update_project_payload,
+        project_id,
+        ERRORS_CONF.FIELD_VALUE.EMPTY_STRINGS
+    )
 
 
 def test_delete_project_details():
