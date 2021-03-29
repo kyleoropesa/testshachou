@@ -7,6 +7,10 @@ class FieldValueErrors(BaseConfig):
     EMPTY_STRINGS: str = 'Empty strings are not allowed'
 
 
+class GeneralErrors(BaseConfig):
+    PROJECT_DOES_NOT_EXIST: str = "Project ID does not exist"
+
+
 @dataclass
 class ErrorsConfig:
     FIELD_VALUE: FieldValueErrors = FieldValueErrors()
