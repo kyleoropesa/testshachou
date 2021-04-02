@@ -3,6 +3,7 @@ from config.endpoints import EndpointConfig
 from fastapi import status
 from main import app
 from config.errormessage import ErrorsConfig
+from typing import Tuple
 
 httpclient = TestClient(app)
 URL = EndpointConfig()
@@ -35,6 +36,16 @@ def get_created_project_id() -> str:
     assert response.status_code == status.HTTP_201_CREATED
     json_response = response.json()
     return json_response['id']
+
+
+def get_created_testcase_id_and_project_id(payload: dict) -> Tuple[str, str]:
+    project_id = get_created_project_id()
+    created_testcase = httpclient.post(
+        URL.TESTCASE.CREATE_TESTCASE.format(project_id=project_id),
+        json=payload
+    )
+    testcase_id = created_testcase.json()['id']
+    return project_id, testcase_id
 
 
 def assert_empty_field_in_create_project_should_return_error(payload):
@@ -187,3 +198,34 @@ def test_get_created_testcase_details_using_non_existing_project_id():
     )
 
     assert testcase_details.json()['error'] == ERRORS_CONF.GENERAL_ERRORS.PROJECT_DOES_NOT_EXIST
+
+
+def assert_payload_and_expected_response_in_testcase(payload: dict, response: dict):
+    assert payload['title'] == response['title']
+    assert payload['description'] == response['description']
+    assert payload['author'] == response['author']
+    assert payload['tags'] == response['tags']
+    assert payload['expected_results'] == response['expected_results']
+    assert response['id'] is not None
+    assert response['project_id'] is not None
+    assert response['created_at'] is not None
+    assert response['updated_at'] is not None
+    assert response['created_at'] != response['updated_at']
+    assert response['updated_by'] == payload['author']
+
+
+def test_update_testcase_title():
+    create_payload = generate_create_testcase_payload()
+    update_payload = generate_create_testcase_payload(title='updated_title')
+    project_id, testcase_id = get_created_testcase_id_and_project_id(create_payload)
+    update_response = httpclient.put(
+        URL.TESTCASE.UPDATE_TESTCASE.format(
+            project_id=project_id,
+            testcase_id=testcase_id
+        ),
+        json=update_payload
+    )
+    update_response_json = update_response.json()
+    assert update_response.status_code == 200
+    assert_payload_and_expected_response_in_testcase(update_payload, update_response_json)
+
