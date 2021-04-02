@@ -229,3 +229,66 @@ def test_update_testcase_title():
     assert update_response.status_code == 200
     assert_payload_and_expected_response_in_testcase(update_payload, update_response_json)
 
+
+def test_update_testcase_description():
+    create_payload = generate_create_testcase_payload()
+    update_payload = generate_create_testcase_payload(description='updated_description')
+    project_id, testcase_id = get_created_testcase_id_and_project_id(create_payload)
+    update_response = httpclient.put(
+        URL.TESTCASE.UPDATE_TESTCASE.format(
+            project_id=project_id,
+            testcase_id=testcase_id
+        ),
+        json=update_payload
+    )
+    update_response_json = update_response.json()
+    assert update_response.status_code == 200
+    assert_payload_and_expected_response_in_testcase(update_payload, update_response_json)
+
+
+def test_update_testcase_author():
+    create_payload = generate_create_testcase_payload()
+    update_payload = generate_create_testcase_payload(description='updated_author')
+    project_id, testcase_id = get_created_testcase_id_and_project_id(create_payload)
+    update_response = httpclient.put(
+        URL.TESTCASE.UPDATE_TESTCASE.format(
+            project_id=project_id,
+            testcase_id=testcase_id
+        ),
+        json=update_payload
+    )
+    update_response_json = update_response.json()
+    assert update_response.status_code == 200
+    assert_payload_and_expected_response_in_testcase(update_payload, update_response_json)
+
+
+def test_update_testcase_tags():
+    create_payload = generate_create_testcase_payload()
+    update_payload = generate_create_testcase_payload(tags=['updated_tags', 'tags_2'])
+    project_id, testcase_id = get_created_testcase_id_and_project_id(create_payload)
+    update_response = httpclient.put(
+        URL.TESTCASE.UPDATE_TESTCASE.format(
+            project_id=project_id,
+            testcase_id=testcase_id
+        ),
+        json=update_payload
+    )
+    update_response_json = update_response.json()
+    assert update_response.status_code == 200
+    assert_payload_and_expected_response_in_testcase(update_payload, update_response_json)
+
+
+def test_update_testcase_expected_results():
+    create_payload = generate_create_testcase_payload()
+    update_payload = generate_create_testcase_payload(expected_results="testing expected results")
+    project_id, testcase_id = get_created_testcase_id_and_project_id(create_payload)
+    update_response = httpclient.put(
+        URL.TESTCASE.UPDATE_TESTCASE.format(
+            project_id=project_id,
+            testcase_id=testcase_id
+        ),
+        json=update_payload
+    )
+    update_response_json = update_response.json()
+    assert update_response.status_code == 200
+    assert_payload_and_expected_response_in_testcase(update_payload, update_response_json)
