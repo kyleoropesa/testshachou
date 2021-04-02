@@ -456,7 +456,7 @@ def test_update_testcase_tags_using_spaces_only():
 
 def test_update_testcase_exepected_results_using_empty_spaces():
     create_payload = generate_create_testcase_payload()
-    update_payload = generate_create_testcase_payload(expected_results=[''])
+    update_payload = generate_create_testcase_payload(expected_results='')
     project_id, testcase_id = get_created_testcase_id_and_project_id(create_payload)
     update_response = httpclient.put(
         URL.TESTCASE.UPDATE_TESTCASE.format(
@@ -472,7 +472,7 @@ def test_update_testcase_exepected_results_using_empty_spaces():
 
 def test_update_testcase_expected_results_using_spaces_only():
     create_payload = generate_create_testcase_payload()
-    update_payload = generate_create_testcase_payload(expected_results=['   '])
+    update_payload = generate_create_testcase_payload(expected_results='   ')
     project_id, testcase_id = get_created_testcase_id_and_project_id(create_payload)
     update_response = httpclient.put(
         URL.TESTCASE.UPDATE_TESTCASE.format(
