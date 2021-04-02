@@ -5,6 +5,7 @@ from uuid import uuid4
 from models.projects import *
 from models.testcase import *
 from models.commonerrors import *
+import uuid
 
 app = FastAPI()
 projects_db: Dict = {}
@@ -72,6 +73,7 @@ async def update_project(project_id, request: ProjectRequestModel, response: Res
 async def create_testcase(project_id, request: TestCaseRequestModel, response: Response):
     if project_id in projects_db:
         testcase = TestCaseResponseModel(
+            project_id=uuid.UUID(project_id),
             id=uuid4(),
             created_at=datetime.utcnow(),
             updated_at=datetime.utcnow(),
