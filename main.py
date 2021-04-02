@@ -82,7 +82,8 @@ async def create_testcase(project_id, request: TestCaseRequestModel, response: R
             description=request.description,
             author=request.author,
             tags=request.tags,
-            expected_results=request.expected_results
+            expected_results=request.expected_results,
+            archived=False
         )
         testcase_db[str(testcase.id)] = testcase
         return testcase
@@ -105,8 +106,18 @@ async def get_testcase_details(project_id, testcase_id, response: Response):
 
 
 @app.delete(URL_CONF.TESTCASE.DELETE_TESTCASE)
-async def delete_testcase(project_id, testcase_id):
-    pass
+async def delete_testcase(project_id, testcase_id, response: Response):
+    if project_id in projects_db:
+        try:
+            testcase: TestCaseResponseModel = testcase_db[testcase_id]
+            testcase.archived = True
+            return testcase
+        except KeyError:
+            response.status_code = status.HTTP_404_NOT_FOUND
+            return GeneralError(error=ERRORS_CONF.GENERAL_ERRORS.TESTCASE_DOES_NOT_EXIST)
+    else:
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return GeneralError(error=ERRORS_CONF.GENERAL_ERRORS.PROJECT_DOES_NOT_EXIST)
 
 
 @app.put(URL_CONF.TESTCASE.UPDATE_TESTCASE)
