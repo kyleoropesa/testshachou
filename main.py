@@ -118,9 +118,11 @@ async def update_testcase(project_id, testcase_id, request: TestCaseRequestModel
             testcase.description = request.description
             testcase.author = request.author
             testcase.tags = request.tags
-            testcase.expected_results = request.expected_results,
+            testcase.expected_results = request.expected_results
             testcase.updated_at = datetime.utcnow()
             testcase.updated_by = request.author
+
+            return testcase
         except KeyError:
             response.status_code = status.HTTP_404_NOT_FOUND
             return GeneralError(error=ERRORS_CONF.GENERAL_ERRORS.TESTCASE_DOES_NOT_EXIST)
