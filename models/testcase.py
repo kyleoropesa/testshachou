@@ -44,6 +44,7 @@ class TestCaseRequestModel(BaseModel):
 
 
 class TestCaseResponseModel(TestCaseRequestModel):
+    project_id: UUID
     id: UUID
     created_at: datetime
     updated_at: datetime

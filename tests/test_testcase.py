@@ -24,7 +24,7 @@ def generate_create_testcase_payload(
     }
 
 
-def get_project_id() -> str:
+def get_created_project_id() -> str:
     payload = {
         "title": "Sample Project",
         "description": "Project description",
@@ -38,7 +38,7 @@ def get_project_id() -> str:
 
 
 def assert_empty_field_in_create_project_should_return_error(payload):
-    project_id = get_project_id()
+    project_id = get_created_project_id()
     response = httpclient.post(
         URL.TESTCASE.CREATE_TESTCASE.format(project_id=project_id),
         json=payload
@@ -49,7 +49,7 @@ def assert_empty_field_in_create_project_should_return_error(payload):
 
 
 def assert_create_project_should_return_error_when_mandatory_fields_use_spaces_only(payload):
-    project_id = get_project_id()
+    project_id = get_created_project_id()
     response = httpclient.post(
         URL.TESTCASE.CREATE_TESTCASE.format(project_id=project_id),
         json=payload
@@ -60,7 +60,7 @@ def assert_create_project_should_return_error_when_mandatory_fields_use_spaces_o
 
 
 def test_successful_create_testcase():
-    project_id = get_project_id()
+    project_id = get_created_project_id()
     payload = generate_create_testcase_payload()
     response = httpclient.post(
         URL.TESTCASE.CREATE_TESTCASE.format(project_id=project_id),
@@ -68,6 +68,7 @@ def test_successful_create_testcase():
     )
     json_response = response.json()
     assert response.status_code == status.HTTP_201_CREATED
+    assert json_response['project_id'] is not None
     assert json_response['id'] is not None
     assert json_response['title'] == payload['title']
     assert json_response['description'] == payload['description']
@@ -138,3 +139,51 @@ def test_create_testcase_using_empty_strings_only_on_tag_values():
 def test_create_testcase_using_spaces_only_on_tag_values():
     payload = generate_create_testcase_payload(tags=[" "])
     assert_create_project_should_return_error_when_mandatory_fields_use_spaces_only(payload)
+
+
+def test_get_created_testcase_details():
+    payload = generate_create_testcase_payload()
+    project_id = get_created_project_id()
+    created_testcase = httpclient.post(
+        URL.TESTCASE.CREATE_TESTCASE.format(project_id=project_id),
+        json=payload
+    )
+
+    testcase_details = httpclient.get(
+        URL.TESTCASE.GET_TESTCASE_DETAIL.format(
+            project_id=project_id,
+            testcase_id=created_testcase.json()['id']
+        )
+    )
+
+    assert created_testcase.json() == testcase_details.json()
+
+
+def test_get_created_testcase_details_using_non_existing_testcase_id():
+    project_id = get_created_project_id()
+    testcase_details = httpclient.get(
+        URL.TESTCASE.GET_TESTCASE_DETAIL.format(
+            project_id=project_id,
+            testcase_id="NONEXISTING"
+        )
+    )
+
+    assert testcase_details.json()['error'] == ERRORS_CONF.GENERAL_ERRORS.TESTCASE_DOES_NOT_EXIST
+
+
+def test_get_created_testcase_details_using_non_existing_project_id():
+    payload = generate_create_testcase_payload()
+    project_id = get_created_project_id()
+    created_testcase = httpclient.post(
+        URL.TESTCASE.CREATE_TESTCASE.format(project_id=project_id),
+        json=payload
+    )
+
+    testcase_details = httpclient.get(
+        URL.TESTCASE.GET_TESTCASE_DETAIL.format(
+            project_id="NONEXISTING",
+            testcase_id=created_testcase.json()['id']
+        )
+    )
+
+    assert testcase_details.json()['error'] == ERRORS_CONF.GENERAL_ERRORS.PROJECT_DOES_NOT_EXIST
