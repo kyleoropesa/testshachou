@@ -356,3 +356,65 @@ def test_update_testcase_description_using_spaces_only():
     update_response_json = update_response.json()
     assert update_response.status_code == 422
     assert update_response_json['detail'][0]['msg'] == ERRORS_CONF.FIELD_VALUE.SPACES_ONLY
+
+def test_update_testcase_title_using_empty_spaces():
+    create_payload = generate_create_testcase_payload()
+    update_payload = generate_create_testcase_payload(title='')
+    project_id, testcase_id = get_created_testcase_id_and_project_id(create_payload)
+    update_response = httpclient.put(
+        URL.TESTCASE.UPDATE_TESTCASE.format(
+            project_id=project_id,
+            testcase_id=testcase_id
+        ),
+        json=update_payload
+    )
+    update_response_json = update_response.json()
+    assert update_response.status_code == 422
+    assert update_response_json['detail'][0]['msg'] == ERRORS_CONF.FIELD_VALUE.EMPTY_STRINGS
+
+
+def test_update_testcase_title_using_spaces_only():
+    create_payload = generate_create_testcase_payload()
+    update_payload = generate_create_testcase_payload(title='   ')
+    project_id, testcase_id = get_created_testcase_id_and_project_id(create_payload)
+    update_response = httpclient.put(
+        URL.TESTCASE.UPDATE_TESTCASE.format(
+            project_id=project_id,
+            testcase_id=testcase_id
+        ),
+        json=update_payload
+    )
+    update_response_json = update_response.json()
+    assert update_response.status_code == 422
+    assert update_response_json['detail'][0]['msg'] == ERRORS_CONF.FIELD_VALUE.SPACES_ONLY
+
+def test_update_testcase_author_using_empty_spaces():
+    create_payload = generate_create_testcase_payload()
+    update_payload = generate_create_testcase_payload(author='')
+    project_id, testcase_id = get_created_testcase_id_and_project_id(create_payload)
+    update_response = httpclient.put(
+        URL.TESTCASE.UPDATE_TESTCASE.format(
+            project_id=project_id,
+            testcase_id=testcase_id
+        ),
+        json=update_payload
+    )
+    update_response_json = update_response.json()
+    assert update_response.status_code == 422
+    assert update_response_json['detail'][0]['msg'] == ERRORS_CONF.FIELD_VALUE.EMPTY_STRINGS
+
+
+def test_update_testcase_author_using_spaces_only():
+    create_payload = generate_create_testcase_payload()
+    update_payload = generate_create_testcase_payload(author='   ')
+    project_id, testcase_id = get_created_testcase_id_and_project_id(create_payload)
+    update_response = httpclient.put(
+        URL.TESTCASE.UPDATE_TESTCASE.format(
+            project_id=project_id,
+            testcase_id=testcase_id
+        ),
+        json=update_payload
+    )
+    update_response_json = update_response.json()
+    assert update_response.status_code == 422
+    assert update_response_json['detail'][0]['msg'] == ERRORS_CONF.FIELD_VALUE.SPACES_ONLY
