@@ -9,6 +9,7 @@ class FieldValueErrors(BaseConfig):
 
 class GeneralErrors(BaseConfig):
     PROJECT_DOES_NOT_EXIST: str = "Project ID does not exist"
+    TESTCASE_DOES_NOT_EXIST: str = "Testcase ID not exist under this project"
 
 
 @dataclass

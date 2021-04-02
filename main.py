@@ -5,6 +5,7 @@ from uuid import uuid4
 from models.projects import *
 from models.testcase import *
 from models.commonerrors import *
+import uuid
 
 app = FastAPI()
 projects_db: Dict = {}
@@ -72,6 +73,7 @@ async def update_project(project_id, request: ProjectRequestModel, response: Res
 async def create_testcase(project_id, request: TestCaseRequestModel, response: Response):
     if project_id in projects_db:
         testcase = TestCaseResponseModel(
+            project_id=uuid.UUID(project_id),
             id=uuid4(),
             created_at=datetime.utcnow(),
             updated_at=datetime.utcnow(),
@@ -90,8 +92,16 @@ async def create_testcase(project_id, request: TestCaseRequestModel, response: R
 
 
 @app.get(URL_CONF.TESTCASE.GET_TESTCASE_DETAIL)
-async def get_testcase_details(project_id, testcase_id):
-    pass
+async def get_testcase_details(project_id, testcase_id, response: Response):
+    if project_id in projects_db:
+        try:
+            return testcase_db[testcase_id]
+        except KeyError:
+            response.status_code = status.HTTP_404_NOT_FOUND
+            return GeneralError(error=ERRORS_CONF.GENERAL_ERRORS.TESTCASE_DOES_NOT_EXIST)
+    else:
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return GeneralError(error=ERRORS_CONF.GENERAL_ERRORS.PROJECT_DOES_NOT_EXIST)
 
 
 @app.delete(URL_CONF.TESTCASE.DELETE_TESTCASE)
@@ -100,5 +110,22 @@ async def delete_testcase(project_id, testcase_id):
 
 
 @app.put(URL_CONF.TESTCASE.UPDATE_TESTCASE)
-async def update_testcase(project_id, testcase_id):
-    pass
+async def update_testcase(project_id, testcase_id, request: TestCaseRequestModel, response: Response):
+    if project_id in projects_db:
+        try:
+            testcase: TestCaseResponseModel = testcase_db[testcase_id]
+            testcase.title = request.title
+            testcase.description = request.description
+            testcase.author = request.author
+            testcase.tags = request.tags
+            testcase.expected_results = request.expected_results
+            testcase.updated_at = datetime.utcnow()
+            testcase.updated_by = request.author
+
+            return testcase
+        except KeyError:
+            response.status_code = status.HTTP_404_NOT_FOUND
+            return GeneralError(error=ERRORS_CONF.GENERAL_ERRORS.TESTCASE_DOES_NOT_EXIST)
+    else:
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return GeneralError(error=ERRORS_CONF.GENERAL_ERRORS.PROJECT_DOES_NOT_EXIST)
