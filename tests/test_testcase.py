@@ -24,7 +24,7 @@ def generate_create_testcase_payload(
     }
 
 
-def get_project_id() -> str:
+def get_created_project_id() -> str:
     payload = {
         "title": "Sample Project",
         "description": "Project description",
@@ -38,7 +38,7 @@ def get_project_id() -> str:
 
 
 def assert_empty_field_in_create_project_should_return_error(payload):
-    project_id = get_project_id()
+    project_id = get_created_project_id()
     response = httpclient.post(
         URL.TESTCASE.CREATE_TESTCASE.format(project_id=project_id),
         json=payload
@@ -49,7 +49,7 @@ def assert_empty_field_in_create_project_should_return_error(payload):
 
 
 def assert_create_project_should_return_error_when_mandatory_fields_use_spaces_only(payload):
-    project_id = get_project_id()
+    project_id = get_created_project_id()
     response = httpclient.post(
         URL.TESTCASE.CREATE_TESTCASE.format(project_id=project_id),
         json=payload
@@ -60,7 +60,7 @@ def assert_create_project_should_return_error_when_mandatory_fields_use_spaces_o
 
 
 def test_successful_create_testcase():
-    project_id = get_project_id()
+    project_id = get_created_project_id()
     payload = generate_create_testcase_payload()
     response = httpclient.post(
         URL.TESTCASE.CREATE_TESTCASE.format(project_id=project_id),
