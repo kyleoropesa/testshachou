@@ -484,3 +484,35 @@ def test_update_testcase_expected_results_using_spaces_only():
     update_response_json = update_response.json()
     assert update_response.status_code == 422
     assert update_response_json['detail'][0]['msg'] == ERRORS_CONF.FIELD_VALUE.SPACES_ONLY
+
+
+def test_update_testcase_using_non_existing_project_id():
+    create_payload = generate_create_testcase_payload()
+    update_payload = generate_create_testcase_payload(expected_results='updated expected results')
+    project_id, testcase_id = get_created_testcase_id_and_project_id(create_payload)
+    update_response = httpclient.put(
+        URL.TESTCASE.UPDATE_TESTCASE.format(
+            project_id='NON_EXISTING',
+            testcase_id=testcase_id
+        ),
+        json=update_payload
+    )
+    update_response_json = update_response.json()
+    assert update_response.status_code == 404
+    assert update_response_json['error'] == ERRORS_CONF.GENERAL_ERRORS.PROJECT_DOES_NOT_EXIST
+
+
+def test_update_testcase_using_non_existing_testcase_id():
+    create_payload = generate_create_testcase_payload()
+    update_payload = generate_create_testcase_payload(expected_results='updated expected results')
+    project_id, testcase_id = get_created_testcase_id_and_project_id(create_payload)
+    update_response = httpclient.put(
+        URL.TESTCASE.UPDATE_TESTCASE.format(
+            project_id=project_id,
+            testcase_id='NON_EXISTING'
+        ),
+        json=update_payload
+    )
+    update_response_json = update_response.json()
+    assert update_response.status_code == 404
+    assert update_response_json['error'] == ERRORS_CONF.GENERAL_ERRORS.TESTCASE_DOES_NOT_EXIST
