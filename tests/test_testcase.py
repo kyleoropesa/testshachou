@@ -68,6 +68,7 @@ def test_successful_create_testcase():
     )
     json_response = response.json()
     assert response.status_code == status.HTTP_201_CREATED
+    assert json_response['project_id'] is not None
     assert json_response['id'] is not None
     assert json_response['title'] == payload['title']
     assert json_response['description'] == payload['description']
