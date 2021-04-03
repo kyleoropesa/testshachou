@@ -94,7 +94,7 @@ async def create_testcase(project_id, request: TestCaseRequestModel, response: R
 
 @app.get(URL_CONF.TESTCASE.GET_TESTCASE_DETAIL)
 async def get_testcase_details(project_id, testcase_id, response: Response):
-    testcase_record = testcase_db.get(testcase_id)
+    testcase_record: TestCaseResponseModel = testcase_db.get(testcase_id)
     if not testcase_record:
         response.status_code = status.HTTP_404_NOT_FOUND
         return GeneralError(error=ERRORS_CONF.GENERAL_ERRORS.TESTCASE_DOES_NOT_EXIST)
@@ -107,23 +107,22 @@ async def get_testcase_details(project_id, testcase_id, response: Response):
 
 @app.delete(URL_CONF.TESTCASE.DELETE_TESTCASE)
 async def delete_testcase(project_id, testcase_id, response: Response):
-    if project_id in projects_db:
-        try:
-            testcase: TestCaseResponseModel = testcase_db[testcase_id]
-            testcase.archived = True
-            return testcase
-        except KeyError:
-            response.status_code = status.HTTP_404_NOT_FOUND
-            return GeneralError(error=ERRORS_CONF.GENERAL_ERRORS.TESTCASE_DOES_NOT_EXIST)
-    else:
+    testcase_record: TestCaseResponseModel = testcase_db.get(testcase_id)
+    if not testcase_record:
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return GeneralError(error=ERRORS_CONF.GENERAL_ERRORS.TESTCASE_DOES_NOT_EXIST)
+    elif str(testcase_record.project_id) != project_id:
         response.status_code = status.HTTP_404_NOT_FOUND
         return GeneralError(error=ERRORS_CONF.GENERAL_ERRORS.PROJECT_DOES_NOT_EXIST)
+    else:
+        testcase_record.archived = True
+        return testcase_record
 
 
 @app.put(URL_CONF.TESTCASE.UPDATE_TESTCASE)
 async def update_testcase(project_id, testcase_id, request: TestCaseRequestModel, response: Response):
-    testcase_record = testcase_db.get(testcase_id)
-    if not testcase_record:
+    testcase_record: TestCaseResponseModel = testcase_db.get(testcase_id)
+    if not testcase_record or testcase_record.archived:
         response.status_code = status.HTTP_404_NOT_FOUND
         return GeneralError(error=ERRORS_CONF.GENERAL_ERRORS.TESTCASE_DOES_NOT_EXIST)
     elif str(testcase_record.project_id) != project_id:
