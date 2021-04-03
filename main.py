@@ -37,36 +37,42 @@ async def create_project(request: ProjectRequestModel):
 
 @app.get(URL_CONF.PROJECT.GET_PROJECT_DETAILS)
 async def get_project_details(project_id, response: Response):
-    try:
-        return projects_db[project_id]
-    except KeyError:
+    project = projects_db.get(project_id)
+    if not project:
         response.status_code = status.HTTP_404_NOT_FOUND
         return GeneralError(error=ERRORS_CONF.GENERAL_ERRORS.PROJECT_DOES_NOT_EXIST)
+    else:
+        return project
 
 
 @app.delete(URL_CONF.PROJECT.DELETE_PROJECT)
 async def delete_project(project_id, response: Response):
-    try:
-        project: ProjectResponseModel = projects_db[project_id]
-        project.active = False
-    except KeyError:
+    project: ProjectResponseModel = projects_db.get(project_id)
+    if not project:
         response.status_code = status.HTTP_404_NOT_FOUND
         return GeneralError(error=ERRORS_CONF.GENERAL_ERRORS.PROJECT_DOES_NOT_EXIST)
+    else:
+        project: ProjectResponseModel = projects_db[project_id]
+        project.active = False
+        return project
 
 
 @app.put(URL_CONF.PROJECT.UPDATE_PROJECT)
 async def update_project(project_id, request: ProjectRequestModel, response: Response):
-    try:
+    project: ProjectResponseModel = projects_db.get(project_id)
+    if not project:
+        response.status_code = status.HTTP_404_NOT_FOUND
+        return GeneralError(error=ERRORS_CONF.GENERAL_ERRORS.PROJECT_DOES_NOT_EXIST)
+    else:
         project: ProjectResponseModel = projects_db[project_id]
         project.title = request.title
         project.description = request.description
         project.owner = request.owner
         project.tags = request.tags
         project.updated_at = datetime.utcnow()
+
         return project
-    except KeyError:
-        response.status_code = status.HTTP_404_NOT_FOUND
-        return GeneralError(error=ERRORS_CONF.GENERAL_ERRORS.PROJECT_DOES_NOT_EXIST)
+
 
 
 @app.post(URL_CONF.TESTCASE.CREATE_TESTCASE, status_code=status.HTTP_201_CREATED)
