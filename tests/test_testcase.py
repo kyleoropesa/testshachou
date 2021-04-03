@@ -228,7 +228,7 @@ def test_update_testcase_title():
         json=update_payload
     )
     update_response_json = update_response.json()
-    assert update_response.status_code == 200
+    assert update_response.status_code == status.HTTP_200_OK
     assert_payload_and_expected_response_in_testcase(update_payload, update_response_json)
 
 
@@ -244,7 +244,7 @@ def test_update_testcase_description():
         json=update_payload
     )
     update_response_json = update_response.json()
-    assert update_response.status_code == 200
+    assert update_response.status_code == status.HTTP_200_OK
     assert_payload_and_expected_response_in_testcase(update_payload, update_response_json)
 
 
@@ -260,7 +260,7 @@ def test_update_testcase_author():
         json=update_payload
     )
     update_response_json = update_response.json()
-    assert update_response.status_code == 200
+    assert update_response.status_code == status.HTTP_200_OK
     assert_payload_and_expected_response_in_testcase(update_payload, update_response_json)
 
 
@@ -276,7 +276,7 @@ def test_update_testcase_tags():
         json=update_payload
     )
     update_response_json = update_response.json()
-    assert update_response.status_code == 200
+    assert update_response.status_code == status.HTTP_200_OK
     assert_payload_and_expected_response_in_testcase(update_payload, update_response_json)
 
 
@@ -292,7 +292,7 @@ def test_update_testcase_expected_results():
         json=update_payload
     )
     update_response_json = update_response.json()
-    assert update_response.status_code == 200
+    assert update_response.status_code == status.HTTP_200_OK
     assert_payload_and_expected_response_in_testcase(update_payload, update_response_json)
 
 
@@ -308,7 +308,7 @@ def test_update_testcase_title_using_empty_spaces():
         json=update_payload
     )
     update_response_json = update_response.json()
-    assert update_response.status_code == 422
+    assert update_response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
     assert update_response_json['detail'][0]['msg'] == ERRORS_CONF.FIELD_VALUE.EMPTY_STRINGS
 
 
@@ -324,7 +324,7 @@ def test_update_testcase_title_using_spaces_only():
         json=update_payload
     )
     update_response_json = update_response.json()
-    assert update_response.status_code == 422
+    assert update_response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
     assert update_response_json['detail'][0]['msg'] == ERRORS_CONF.FIELD_VALUE.SPACES_ONLY
 
 
@@ -340,7 +340,7 @@ def test_update_testcase_description_using_empty_spaces():
         json=update_payload
     )
     update_response_json = update_response.json()
-    assert update_response.status_code == 422
+    assert update_response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
     assert update_response_json['detail'][0]['msg'] == ERRORS_CONF.FIELD_VALUE.EMPTY_STRINGS
 
 
@@ -356,7 +356,7 @@ def test_update_testcase_description_using_spaces_only():
         json=update_payload
     )
     update_response_json = update_response.json()
-    assert update_response.status_code == 422
+    assert update_response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
     assert update_response_json['detail'][0]['msg'] == ERRORS_CONF.FIELD_VALUE.SPACES_ONLY
 
 
@@ -372,7 +372,7 @@ def test_update_testcase_author_using_empty_spaces():
         json=update_payload
     )
     update_response_json = update_response.json()
-    assert update_response.status_code == 422
+    assert update_response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
     assert update_response_json['detail'][0]['msg'] == ERRORS_CONF.FIELD_VALUE.EMPTY_STRINGS
 
 
@@ -388,7 +388,7 @@ def test_update_testcase_author_using_spaces_only():
         json=update_payload
     )
     update_response_json = update_response.json()
-    assert update_response.status_code == 422
+    assert update_response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
     assert update_response_json['detail'][0]['msg'] == ERRORS_CONF.FIELD_VALUE.SPACES_ONLY
 
 
@@ -404,7 +404,7 @@ def test_update_testcase_tags_using_empty_spaces():
         json=update_payload
     )
     update_response_json = update_response.json()
-    assert update_response.status_code == 422
+    assert update_response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
     assert update_response_json['detail'][0]['msg'] == ERRORS_CONF.FIELD_VALUE.EMPTY_STRINGS
 
 
@@ -420,7 +420,7 @@ def test_update_testcase_tags_using_spaces_only():
         json=update_payload
     )
     update_response_json = update_response.json()
-    assert update_response.status_code == 422
+    assert update_response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
     assert update_response_json['detail'][0]['msg'] == ERRORS_CONF.FIELD_VALUE.SPACES_ONLY
 
 
@@ -436,7 +436,7 @@ def test_update_testcase_exepected_results_using_empty_spaces():
         json=update_payload
     )
     update_response_json = update_response.json()
-    assert update_response.status_code == 422
+    assert update_response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
     assert update_response_json['detail'][0]['msg'] == ERRORS_CONF.FIELD_VALUE.EMPTY_STRINGS
 
 
@@ -452,7 +452,7 @@ def test_update_testcase_expected_results_using_spaces_only():
         json=update_payload
     )
     update_response_json = update_response.json()
-    assert update_response.status_code == 422
+    assert update_response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
     assert update_response_json['detail'][0]['msg'] == ERRORS_CONF.FIELD_VALUE.SPACES_ONLY
 
 
@@ -468,7 +468,7 @@ def test_update_testcase_using_non_existing_project_id():
         json=update_payload
     )
     update_response_json = update_response.json()
-    assert update_response.status_code == 404
+    assert update_response.status_code == status.HTTP_404_NOT_FOUND
     assert update_response_json['error'] == ERRORS_CONF.GENERAL_ERRORS.PROJECT_DOES_NOT_EXIST
 
 
@@ -484,7 +484,7 @@ def test_update_testcase_using_non_existing_testcase_id():
         json=update_payload
     )
     update_response_json = update_response.json()
-    assert update_response.status_code == 404
+    assert update_response.status_code == status.HTTP_404_NOT_FOUND
     assert update_response_json['error'] == ERRORS_CONF.GENERAL_ERRORS.TESTCASE_DOES_NOT_EXIST
 
 
