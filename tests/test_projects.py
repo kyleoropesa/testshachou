@@ -285,6 +285,31 @@ def test_update_project_tags_to_spaces_only_should_return_error():
     )
 
 
+def test_update_deleted_project():
+    create_project_payload = generate_create_project_payload(title='original payload')
+    project_id = get_id_of_created_project(create_project_payload)
+    deleted_project_response = httpclient.delete(
+        URL.PROJECT.DELETE_PROJECT.format(
+            project_id=project_id
+        )
+    )
+    assert deleted_project_response.status_code == status.HTTP_200_OK
+    update_project_payload = generate_create_project_payload(
+        title='updated title',
+        description='updated description',
+        owner='updated owner',
+        tags=['updated tags']
+    )
+    update_project_response = httpclient.put(
+        URL.PROJECT.UPDATE_PROJECT.format(
+            project_id=project_id
+        ),
+        json=update_project_payload
+    )
+    assert update_project_response.status_code == status.HTTP_404_NOT_FOUND
+    assert update_project_response.json()['error'] == ERRORS_CONF.GENERAL_ERRORS.PROJECT_DOES_NOT_EXIST
+
+
 def test_delete_project_details():
     create_project_payload = generate_create_project_payload(title='original payload')
     project_id = get_id_of_created_project(create_project_payload)

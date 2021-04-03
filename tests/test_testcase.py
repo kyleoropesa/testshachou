@@ -89,6 +89,7 @@ def test_successful_create_testcase():
     assert json_response['created_at'] is not None
     assert json_response['updated_at'] is not None
     assert json_response['updated_by'] == payload['author']
+    assert not json_response['archived']
 
 
 def test_create_testcase_with_empty_title():
@@ -212,6 +213,7 @@ def assert_payload_and_expected_response_in_testcase(payload: dict, response: di
     assert response['updated_at'] is not None
     assert response['created_at'] != response['updated_at']
     assert response['updated_by'] == payload['author']
+    assert not response['archived']
 
 
 def test_update_testcase_title():
@@ -226,7 +228,7 @@ def test_update_testcase_title():
         json=update_payload
     )
     update_response_json = update_response.json()
-    assert update_response.status_code == 200
+    assert update_response.status_code == status.HTTP_200_OK
     assert_payload_and_expected_response_in_testcase(update_payload, update_response_json)
 
 
@@ -242,7 +244,7 @@ def test_update_testcase_description():
         json=update_payload
     )
     update_response_json = update_response.json()
-    assert update_response.status_code == 200
+    assert update_response.status_code == status.HTTP_200_OK
     assert_payload_and_expected_response_in_testcase(update_payload, update_response_json)
 
 
@@ -258,7 +260,7 @@ def test_update_testcase_author():
         json=update_payload
     )
     update_response_json = update_response.json()
-    assert update_response.status_code == 200
+    assert update_response.status_code == status.HTTP_200_OK
     assert_payload_and_expected_response_in_testcase(update_payload, update_response_json)
 
 
@@ -274,7 +276,7 @@ def test_update_testcase_tags():
         json=update_payload
     )
     update_response_json = update_response.json()
-    assert update_response.status_code == 200
+    assert update_response.status_code == status.HTTP_200_OK
     assert_payload_and_expected_response_in_testcase(update_payload, update_response_json)
 
 
@@ -290,7 +292,7 @@ def test_update_testcase_expected_results():
         json=update_payload
     )
     update_response_json = update_response.json()
-    assert update_response.status_code == 200
+    assert update_response.status_code == status.HTTP_200_OK
     assert_payload_and_expected_response_in_testcase(update_payload, update_response_json)
 
 
@@ -306,7 +308,7 @@ def test_update_testcase_title_using_empty_spaces():
         json=update_payload
     )
     update_response_json = update_response.json()
-    assert update_response.status_code == 422
+    assert update_response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
     assert update_response_json['detail'][0]['msg'] == ERRORS_CONF.FIELD_VALUE.EMPTY_STRINGS
 
 
@@ -322,7 +324,7 @@ def test_update_testcase_title_using_spaces_only():
         json=update_payload
     )
     update_response_json = update_response.json()
-    assert update_response.status_code == 422
+    assert update_response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
     assert update_response_json['detail'][0]['msg'] == ERRORS_CONF.FIELD_VALUE.SPACES_ONLY
 
 
@@ -338,7 +340,7 @@ def test_update_testcase_description_using_empty_spaces():
         json=update_payload
     )
     update_response_json = update_response.json()
-    assert update_response.status_code == 422
+    assert update_response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
     assert update_response_json['detail'][0]['msg'] == ERRORS_CONF.FIELD_VALUE.EMPTY_STRINGS
 
 
@@ -354,7 +356,7 @@ def test_update_testcase_description_using_spaces_only():
         json=update_payload
     )
     update_response_json = update_response.json()
-    assert update_response.status_code == 422
+    assert update_response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
     assert update_response_json['detail'][0]['msg'] == ERRORS_CONF.FIELD_VALUE.SPACES_ONLY
 
 
@@ -370,7 +372,7 @@ def test_update_testcase_author_using_empty_spaces():
         json=update_payload
     )
     update_response_json = update_response.json()
-    assert update_response.status_code == 422
+    assert update_response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
     assert update_response_json['detail'][0]['msg'] == ERRORS_CONF.FIELD_VALUE.EMPTY_STRINGS
 
 
@@ -386,7 +388,7 @@ def test_update_testcase_author_using_spaces_only():
         json=update_payload
     )
     update_response_json = update_response.json()
-    assert update_response.status_code == 422
+    assert update_response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
     assert update_response_json['detail'][0]['msg'] == ERRORS_CONF.FIELD_VALUE.SPACES_ONLY
 
 
@@ -402,7 +404,7 @@ def test_update_testcase_tags_using_empty_spaces():
         json=update_payload
     )
     update_response_json = update_response.json()
-    assert update_response.status_code == 422
+    assert update_response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
     assert update_response_json['detail'][0]['msg'] == ERRORS_CONF.FIELD_VALUE.EMPTY_STRINGS
 
 
@@ -418,7 +420,7 @@ def test_update_testcase_tags_using_spaces_only():
         json=update_payload
     )
     update_response_json = update_response.json()
-    assert update_response.status_code == 422
+    assert update_response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
     assert update_response_json['detail'][0]['msg'] == ERRORS_CONF.FIELD_VALUE.SPACES_ONLY
 
 
@@ -434,7 +436,7 @@ def test_update_testcase_exepected_results_using_empty_spaces():
         json=update_payload
     )
     update_response_json = update_response.json()
-    assert update_response.status_code == 422
+    assert update_response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
     assert update_response_json['detail'][0]['msg'] == ERRORS_CONF.FIELD_VALUE.EMPTY_STRINGS
 
 
@@ -450,7 +452,7 @@ def test_update_testcase_expected_results_using_spaces_only():
         json=update_payload
     )
     update_response_json = update_response.json()
-    assert update_response.status_code == 422
+    assert update_response.status_code == status.HTTP_422_UNPROCESSABLE_ENTITY
     assert update_response_json['detail'][0]['msg'] == ERRORS_CONF.FIELD_VALUE.SPACES_ONLY
 
 
@@ -466,7 +468,7 @@ def test_update_testcase_using_non_existing_project_id():
         json=update_payload
     )
     update_response_json = update_response.json()
-    assert update_response.status_code == 404
+    assert update_response.status_code == status.HTTP_404_NOT_FOUND
     assert update_response_json['error'] == ERRORS_CONF.GENERAL_ERRORS.PROJECT_DOES_NOT_EXIST
 
 
@@ -482,5 +484,43 @@ def test_update_testcase_using_non_existing_testcase_id():
         json=update_payload
     )
     update_response_json = update_response.json()
-    assert update_response.status_code == 404
+    assert update_response.status_code == status.HTTP_404_NOT_FOUND
     assert update_response_json['error'] == ERRORS_CONF.GENERAL_ERRORS.TESTCASE_DOES_NOT_EXIST
+
+
+def test_update_an_archived_test_case():
+    create_payload = generate_create_testcase_payload()
+    update_payload = generate_create_testcase_payload(expected_results='updated expected results')
+    project_id, testcase_id = get_created_testcase_id_and_project_id(create_payload)
+    archived_testcase_response = httpclient.delete(
+        URL.TESTCASE.DELETE_TESTCASE.format(
+            project_id=project_id,
+            testcase_id=testcase_id
+        )
+    )
+    assert archived_testcase_response.json()['archived']
+    assert archived_testcase_response.status_code == status.HTTP_200_OK
+    update_testcase_response = httpclient.put(
+        URL.TESTCASE.UPDATE_TESTCASE.format(
+            project_id=project_id,
+            testcase_id=testcase_id
+        ),
+        json=update_payload
+    )
+
+    assert update_testcase_response.status_code == status.HTTP_404_NOT_FOUND
+    assert update_testcase_response.json()['error'] == ERRORS_CONF.GENERAL_ERRORS.TESTCASE_DOES_NOT_EXIST
+
+
+def test_delete_a_test_case():
+    create_payload = generate_create_testcase_payload()
+    project_id, testcase_id = get_created_testcase_id_and_project_id(create_payload)
+    testcase = httpclient.delete(
+        URL.TESTCASE.DELETE_TESTCASE.format(
+            project_id=project_id,
+            testcase_id=testcase_id
+        )
+    )
+    assert testcase.status_code == 200
+    testcase_json = testcase.json()
+    assert testcase_json['archived']
