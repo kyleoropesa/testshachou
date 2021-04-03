@@ -60,7 +60,7 @@ async def delete_project(project_id, response: Response):
 @app.put(URL_CONF.PROJECT.UPDATE_PROJECT)
 async def update_project(project_id, request: ProjectRequestModel, response: Response):
     project: ProjectResponseModel = projects_db.get(project_id)
-    if not project:
+    if not project or not project.active:
         response.status_code = status.HTTP_404_NOT_FOUND
         return GeneralError(error=ERRORS_CONF.GENERAL_ERRORS.PROJECT_DOES_NOT_EXIST)
     else:
@@ -72,7 +72,6 @@ async def update_project(project_id, request: ProjectRequestModel, response: Res
         project.updated_at = datetime.utcnow()
 
         return project
-
 
 
 @app.post(URL_CONF.TESTCASE.CREATE_TESTCASE, status_code=status.HTTP_201_CREATED)
